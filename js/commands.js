@@ -356,6 +356,42 @@ class CommandRegistry {
     );
 
     this.register(
+      "chumley",
+      (args, terminal) => {
+        window.open("https://op.gg/lol/summoners/na/chumley420-NA1", "_blank");
+      },
+      {
+        description: "",
+        hidden: true,
+      }
+    );
+
+    this.register(
+      "empatheticrock",
+      (args, terminal) => {
+        window.open(
+          "https://op.gg/lol/summoners/na/EmpatheticRock-NA1",
+          "_blank"
+        );
+      },
+      {
+        description: "",
+        hidden: true,
+      }
+    );
+
+    this.register(
+      "masedawg",
+      (args, terminal) => {
+        window.open("https://op.gg/lol/summoners/na/masedawg69-NA1", "_blank");
+      },
+      {
+        description: "",
+        hidden: true,
+      }
+    );
+
+    this.register(
       "cowsay",
       (args, terminal) => {
         const text = args.join(" ") || "Moo!";
