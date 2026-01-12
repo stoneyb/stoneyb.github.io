@@ -16,6 +16,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Cache bust assets
+        run: |
+          # Get short commit SHA for cache busting
+          VERSION=$(git rev-parse --short HEAD)
+
+          # Update CSS link with version
+          sed -i "s|href=\"styles/main.css\"|href=\"styles/main.css?v=${VERSION}\"|g" index.html
+
+          # Update JS files with version
+          sed -i "s|src=\"js/history.js\"|src=\"js/history.js?v=${VERSION}\"|g" index.html
+          sed -i "s|src=\"js/commands.js\"|src=\"js/commands.js?v=${VERSION}\"|g" index.html
+          sed -i "s|src=\"js/matrix.js\"|src=\"js/matrix.js?v=${VERSION}\"|g" index.html
+          sed -i "s|src=\"js/snake.js\"|src=\"js/snake.js?v=${VERSION}\"|g" index.html
+          sed -i "s|src=\"js/terminal.js\"|src=\"js/terminal.js?v=${VERSION}\"|g" index.html
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
