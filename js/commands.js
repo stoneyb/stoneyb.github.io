@@ -97,25 +97,22 @@ class CommandRegistry {
     this.register('resume', (args, terminal) => {
       terminal.print(`
 <span class="output-accent">Resume / CV</span>
-<span class="output-muted">─────────────────────────────────</span>
+<span class="output-muted">───────────────────────────────────────────────</span>
 
-<span class="output-cyan">Experience Highlights:</span>
+<span class="output-cyan">Work Experience:</span>
 
-  <span class="output-accent">•</span> Software Engineer
-    Building scalable web applications and developer tools
+  <span class="output-accent">Skipify</span>                      <span class="output-muted">Apr 2022 - Present</span>
+  <span class="output-accent">Zuul</span>                         <span class="output-muted">Jun 2021 - Present</span>
+  <span class="output-accent">Promontech</span>                   <span class="output-muted">Jul 2018 - Jun 2021</span>
+  <span class="output-accent">Homeadvisor</span>                  <span class="output-muted">Feb 2016 - Jul 2018</span>
+  <span class="output-accent">Lawyaw</span>                       <span class="output-muted">Aug 2016 - Apr 2017</span>
+  <span class="output-accent">Independent</span>                  <span class="output-muted">Dec 2014 - Dec 2015</span>
+  <span class="output-accent">Denver Energy Group</span>          <span class="output-muted">Jul 2014 - Dec 2014</span>
+  <span class="output-accent">Northrop Grumman</span>             <span class="output-muted">May 2012 - May 2014</span>
+  <span class="output-accent">Nasdaq OMX</span>                   <span class="output-muted">May 2010 - Apr 2012</span>
 
-  <span class="output-accent">•</span> Full-Stack Development
-    React, Node.js, TypeScript, Python, and more
-
-  <span class="output-accent">•</span> Problem Solver
-    Turning complex requirements into elegant solutions
-
-<span class="output-cyan">Skills:</span>
-  JavaScript/TypeScript, React, Node.js, Python
-  Git, Docker, AWS, PostgreSQL, MongoDB
-
-<span class="output-muted">─────────────────────────────────</span>
-<span class="output-success">↓</span> <a href="assets/TomStonebergResumeJan2026.pdf" download>Download Full Resume (PDF)</a>
+<span class="output-muted">───────────────────────────────────────────────</span>
+<span class="output-success">↓</span> <a href="assets/TomStonebergResumeJan2026.pdf" target="_blank" rel="noopener">View Full Resume (PDF)</a>
 `, 'response');
     }, {
       description: 'View my resume',
