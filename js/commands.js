@@ -345,6 +345,17 @@ class CommandRegistry {
     );
 
     this.register(
+      "dn",
+      (args, terminal) => {
+        window.open("https://dn-clicker2.vercel.app", "_blank");
+      },
+      {
+        description: "",
+        hidden: true,
+      }
+    );
+
+    this.register(
       "cowsay",
       (args, terminal) => {
         const text = args.join(" ") || "Moo!";
