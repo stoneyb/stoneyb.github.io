@@ -232,36 +232,32 @@ body::before {
 /* --- Terminal Body --- */
 .terminal-body {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: var(--space-lg);
+  scroll-behavior: smooth;
 }
 
 /* --- Output Area --- */
 .terminal-output {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-bottom: var(--space-md);
-  scroll-behavior: smooth;
+  padding-bottom: var(--space-sm);
 }
 
 /* Custom Scrollbar */
-.terminal-output::-webkit-scrollbar {
+.terminal-body::-webkit-scrollbar {
   width: 8px;
 }
 
-.terminal-output::-webkit-scrollbar-track {
+.terminal-body::-webkit-scrollbar-track {
   background: var(--bg-surface);
 }
 
-.terminal-output::-webkit-scrollbar-thumb {
+.terminal-body::-webkit-scrollbar-thumb {
   background: var(--amber-dim);
   border-radius: 4px;
 }
 
-.terminal-output::-webkit-scrollbar-thumb:hover {
+.terminal-body::-webkit-scrollbar-thumb:hover {
   background: var(--amber);
 }
 
@@ -343,9 +339,7 @@ body::before {
 .terminal-input-line {
   display: flex;
   align-items: center;
-  padding-top: var(--space-md);
-  border-top: 1px solid rgba(212, 160, 23, 0.05);
-  flex-shrink: 0;
+  padding-bottom: var(--space-xl);
 }
 
 .prompt {
@@ -390,31 +384,44 @@ body::before {
 }
 
 .terminal-input {
-  flex: 1;
+  position: absolute;
+  width: 100%;
   background: transparent;
   border: none;
   outline: none;
-  color: var(--text-primary);
+  color: transparent;
   font-family: inherit;
   font-size: inherit;
   caret-color: transparent;
   padding: 0;
+  z-index: 1;
+}
+
+.terminal-input:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 .terminal-input::selection {
-  background: var(--amber);
-  color: var(--bg-deep);
+  background: transparent;
+}
+
+/* Text mirror to position cursor correctly */
+.input-mirror {
+  color: var(--text-primary);
+  white-space: pre;
+  pointer-events: none;
 }
 
 /* --- Blinking Cursor --- */
 .cursor {
   display: inline-block;
-  width: 9px;
-  height: 18px;
+  width: 0.6em;
+  height: 1.2em;
   background: var(--amber);
-  margin-left: 1px;
   animation: blink 1s step-end infinite;
   box-shadow: 0 0 8px var(--amber-glow);
+  vertical-align: text-bottom;
 }
 
 @keyframes blink {
@@ -587,6 +594,10 @@ body::before {
 :focus-visible {
   outline: 2px solid var(--cyan);
   outline-offset: 2px;
+}
+
+.terminal-input:focus-visible {
+  outline: none;
 }
 
 /* --- Game Canvas Container --- */

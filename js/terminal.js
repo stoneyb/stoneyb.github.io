@@ -5,8 +5,10 @@
 
 class Terminal {
   constructor() {
+    this.bodyEl = document.getElementById('terminal-body');
     this.outputEl = document.getElementById('output');
     this.inputEl = document.getElementById('terminal-input');
+    this.mirrorEl = document.getElementById('input-mirror');
     this.cursorEl = document.querySelector('.cursor');
 
     this.history = new CommandHistory();
@@ -160,7 +162,7 @@ class Terminal {
   }
 
   scrollToBottom() {
-    this.outputEl.scrollTop = this.outputEl.scrollHeight;
+    this.bodyEl.scrollTop = this.bodyEl.scrollHeight;
   }
 
   focusInput() {
@@ -168,8 +170,11 @@ class Terminal {
   }
 
   updateCursor() {
-    // Position cursor after input text
-    // The cursor is positioned via CSS, this ensures visibility
+    // Sync mirror text with input value
+    if (this.mirrorEl) {
+      this.mirrorEl.textContent = this.inputEl.value;
+    }
+    // Show/hide cursor based on focus
     if (this.cursorEl) {
       this.cursorEl.style.display = document.activeElement === this.inputEl ? 'inline-block' : 'none';
     }

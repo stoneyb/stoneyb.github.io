@@ -115,7 +115,7 @@ class CommandRegistry {
   Git, Docker, AWS, PostgreSQL, MongoDB
 
 <span class="output-muted">─────────────────────────────────</span>
-<span class="output-success">↓</span> <a href="assets/resume.pdf" download>Download Full Resume (PDF)</a>
+<span class="output-success">↓</span> <a href="assets/TomStonebergResumeJan2026.pdf" download>Download Full Resume (PDF)</a>
 `, 'response');
     }, {
       description: 'View my resume',
@@ -355,7 +355,7 @@ ${bottom}
     });
 
     this.register('pwd', (args, terminal) => {
-      terminal.print('/home/guest/tomstoneberg.dev', 'response');
+      terminal.print('/home/guest/tomstoneberg.com', 'response');
     }, {
       description: 'Print working directory',
       hidden: true
@@ -423,7 +423,7 @@ Try typing random things and see what happens!
 
     this.register('neofetch', (args, terminal) => {
       terminal.print(`
-<span class="ascii-art">        _____</span>        <span class="output-cyan">guest</span>@<span class="output-accent">stoneberg.dev</span>
+<span class="ascii-art">        _____</span>        <span class="output-cyan">guest</span>@<span class="output-accent">tomstoneberg.com</span>
 <span class="ascii-art">       /     \\</span>       <span class="output-muted">─────────────────────</span>
 <span class="ascii-art">      | () () |</span>      <span class="output-cyan">OS:</span> WebOS 1.0
 <span class="ascii-art">       \\  ^  /</span>       <span class="output-cyan">Host:</span> Your Browser

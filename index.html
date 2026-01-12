@@ -36,7 +36,7 @@
       </div>
       <div class="terminal-title">
         <span class="title-icon">></span>
-        <span>tom@stoneberg ~ </span>
+        <span>tomstoneberg.com</span>
       </div>
       <div class="terminal-status">
         <span class="status-dot"></span>
@@ -44,8 +44,8 @@
       </div>
     </header>
 
-    <!-- Terminal Body -->
-    <main class="terminal-body">
+    <!-- Terminal Body (scrollable container) -->
+    <main class="terminal-body" id="terminal-body">
       <!-- Output Area -->
       <div
         id="output"
@@ -54,10 +54,10 @@
         aria-live="polite"
       ></div>
 
-      <!-- Input Line -->
-      <div class="terminal-input-line">
+      <!-- Input Line (flows with content) -->
+      <div class="terminal-input-line" id="input-line">
         <span class="prompt" aria-hidden="true">
-          <span class="prompt-user">guest</span><span class="prompt-at">@</span><span class="prompt-host">stoneberg</span><span class="prompt-colon">:</span><span class="prompt-path">~</span><span class="prompt-symbol">$</span>
+          <span class="prompt-user">guest</span><span class="prompt-at">@</span><span class="prompt-host">tomstoneberg.com</span><span class="prompt-colon">:</span><span class="prompt-path">~</span><span class="prompt-symbol">$</span>
         </span>
         <div class="input-wrapper">
           <input
@@ -70,7 +70,7 @@
             spellcheck="false"
             aria-label="Command input"
           >
-          <span class="cursor" aria-hidden="true"></span>
+          <span class="input-mirror" id="input-mirror" aria-hidden="true"></span><span class="cursor" aria-hidden="true"></span>
         </div>
       </div>
     </main>
