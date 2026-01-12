@@ -159,7 +159,7 @@ class CommandRegistry {
 <span class="output-accent">Get In Touch</span>
 <span class="output-muted">─────────────────────────────────</span>
 
-  <span class="output-cyan">Email:</span>     <a href="mailto:tom@stoneberg.dev">tom@stoneberg.dev</a>
+  <span class="output-cyan">Email:</span>     <a href="mailto:hello@tomstoneberg.com">hello@tomstoneberg.com</a>
 
   <span class="output-cyan">GitHub:</span>    <a href="https://github.com/stoneyb" target="_blank" rel="noopener">github.com/stoneyb</a>
 

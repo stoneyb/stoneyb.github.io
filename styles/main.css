@@ -613,11 +613,107 @@ body::before {
   border: 2px solid var(--amber-dim);
   border-radius: 4px;
   box-shadow: 0 0 20px var(--amber-glow);
+  max-width: 100%;
+  height: auto;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .game-info {
   color: var(--text-muted);
   font-size: 12px;
+}
+
+/* --- Mobile Controls --- */
+.snake-mobile-controls {
+  margin-top: var(--space-md);
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.snake-dpad {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 4px;
+  max-width: 100%;
+}
+
+.snake-btn {
+  background: rgba(212, 160, 23, 0.1);
+  border: 2px solid var(--amber-dim);
+  border-radius: 4px;
+  color: var(--amber);
+  font-size: 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.snake-btn:active {
+  background: rgba(212, 160, 23, 0.3);
+  transform: scale(0.95);
+  box-shadow: 0 0 10px var(--amber-glow);
+}
+
+.snake-btn-up {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.snake-btn-left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.snake-btn-center {
+  grid-column: 2;
+  grid-row: 2;
+  font-size: 20px;
+}
+
+.snake-btn-right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.snake-btn-down {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .game-container canvas {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .snake-dpad {
+    width: 180px;
+    height: 180px;
+  }
+
+  .snake-btn {
+    font-size: 20px;
+  }
+
+  .snake-btn-center {
+    font-size: 18px;
+  }
 }
 
 /* --- Matrix Canvas --- */
