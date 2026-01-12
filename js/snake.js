@@ -26,6 +26,15 @@ class SnakeGame {
     this.isRunning = false;
     this.isPaused = false;
     this.speed = 100;
+
+    // Touch/swipe state
+    this.touchStartX = null;
+    this.touchStartY = null;
+    this.minSwipeDistance = 30;
+    // Detect mobile/touch device
+    this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                     ('ontouchstart' in window) ||
+                     (navigator.maxTouchPoints > 0);
   }
 
   start() {
@@ -43,6 +52,7 @@ class SnakeGame {
     this.canvas = document.createElement('canvas');
     this.canvas.width = this.canvasSize;
     this.canvas.height = this.canvasSize;
+    this.canvas.className = 'snake-canvas';
 
     const info = document.createElement('div');
     info.className = 'game-info';
@@ -52,11 +62,74 @@ class SnakeGame {
     this.container.appendChild(this.canvas);
     this.container.appendChild(info);
 
+    // Add mobile controls if on mobile
+    if (this.isMobile) {
+      this.createMobileControls();
+    }
+
     this.terminal.outputEl.appendChild(this.container);
     this.ctx = this.canvas.getContext('2d');
 
     // Scroll to game
     this.container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  createMobileControls() {
+    const controlsContainer = document.createElement('div');
+    controlsContainer.className = 'snake-mobile-controls';
+
+    // Create D-pad style controls
+    const dpad = document.createElement('div');
+    dpad.className = 'snake-dpad';
+
+    // Up button
+    const upBtn = document.createElement('button');
+    upBtn.className = 'snake-btn snake-btn-up';
+    upBtn.setAttribute('aria-label', 'Move up');
+    upBtn.innerHTML = '↑';
+    upBtn.onclick = () => this.handleDirection({ x: 0, y: -1 });
+
+    // Left button
+    const leftBtn = document.createElement('button');
+    leftBtn.className = 'snake-btn snake-btn-left';
+    leftBtn.setAttribute('aria-label', 'Move left');
+    leftBtn.innerHTML = '←';
+    leftBtn.onclick = () => this.handleDirection({ x: -1, y: 0 });
+
+    // Center (pause) button
+    const centerBtn = document.createElement('button');
+    centerBtn.className = 'snake-btn snake-btn-center';
+    centerBtn.setAttribute('aria-label', 'Pause');
+    centerBtn.innerHTML = '⏸';
+    centerBtn.onclick = () => {
+      if (this.isRunning) {
+        this.isPaused = !this.isPaused;
+        this.draw();
+      }
+    };
+
+    // Right button
+    const rightBtn = document.createElement('button');
+    rightBtn.className = 'snake-btn snake-btn-right';
+    rightBtn.setAttribute('aria-label', 'Move right');
+    rightBtn.innerHTML = '→';
+    rightBtn.onclick = () => this.handleDirection({ x: 1, y: 0 });
+
+    // Down button
+    const downBtn = document.createElement('button');
+    downBtn.className = 'snake-btn snake-btn-down';
+    downBtn.setAttribute('aria-label', 'Move down');
+    downBtn.innerHTML = '↓';
+    downBtn.onclick = () => this.handleDirection({ x: 0, y: 1 });
+
+    dpad.appendChild(upBtn);
+    dpad.appendChild(leftBtn);
+    dpad.appendChild(centerBtn);
+    dpad.appendChild(rightBtn);
+    dpad.appendChild(downBtn);
+
+    controlsContainer.appendChild(dpad);
+    this.container.appendChild(controlsContainer);
   }
 
   resetGame() {
@@ -74,6 +147,19 @@ class SnakeGame {
     this.updateScore();
     this.placeFood();
     this.draw();
+  }
+
+  handleDirection(newDir) {
+    if (!this.isRunning) return;
+
+    // Prevent 180-degree turns (can't go back on yourself)
+    if (this.direction.x !== 0 || this.direction.y !== 0) {
+      if (newDir.x === -this.direction.x && newDir.y === -this.direction.y) {
+        return;
+      }
+    }
+
+    this.nextDirection = newDir;
   }
 
   bindControls() {
@@ -112,19 +198,63 @@ class SnakeGame {
 
       const newDir = keyMap[e.key];
       if (newDir) {
-        // Prevent 180-degree turns (can't go back on yourself)
-        if (this.direction.x !== 0 || this.direction.y !== 0) {
-          if (newDir.x === -this.direction.x && newDir.y === -this.direction.y) {
-            return;
-          }
-        }
-
-        this.nextDirection = newDir;
+        this.handleDirection(newDir);
         e.preventDefault();
       }
     };
 
     document.addEventListener('keydown', this.keyHandler);
+
+    // Add touch/swipe handlers for mobile
+    if (this.isMobile && this.canvas) {
+      this.touchStartHandler = (e) => {
+        if (!this.isRunning) return;
+        const touch = e.touches[0];
+        this.touchStartX = touch.clientX;
+        this.touchStartY = touch.clientY;
+      };
+
+      this.touchEndHandler = (e) => {
+        if (!this.isRunning || this.touchStartX === null || this.touchStartY === null) return;
+
+        const touch = e.changedTouches[0];
+        const deltaX = touch.clientX - this.touchStartX;
+        const deltaY = touch.clientY - this.touchStartY;
+        const absDeltaX = Math.abs(deltaX);
+        const absDeltaY = Math.abs(deltaY);
+
+        // Check if it's a swipe (not just a tap)
+        if (absDeltaX < this.minSwipeDistance && absDeltaY < this.minSwipeDistance) {
+          this.touchStartX = null;
+          this.touchStartY = null;
+          return;
+        }
+
+        // Determine swipe direction
+        if (absDeltaX > absDeltaY) {
+          // Horizontal swipe
+          if (deltaX > 0) {
+            this.handleDirection({ x: 1, y: 0 }); // Right
+          } else {
+            this.handleDirection({ x: -1, y: 0 }); // Left
+          }
+        } else {
+          // Vertical swipe
+          if (deltaY > 0) {
+            this.handleDirection({ x: 0, y: 1 }); // Down
+          } else {
+            this.handleDirection({ x: 0, y: -1 }); // Up
+          }
+        }
+
+        this.touchStartX = null;
+        this.touchStartY = null;
+        e.preventDefault();
+      };
+
+      this.canvas.addEventListener('touchstart', this.touchStartHandler, { passive: true });
+      this.canvas.addEventListener('touchend', this.touchEndHandler, { passive: false });
+    }
   }
 
   update() {
@@ -269,7 +399,8 @@ class SnakeGame {
 
       this.ctx.font = '14px "IBM Plex Mono"';
       this.ctx.fillStyle = '#9ca3af';
-      this.ctx.fillText('Press SPACE to resume', this.canvasSize / 2, this.canvasSize / 2 + 30);
+      const resumeText = this.isMobile ? 'Tap pause button to resume' : 'Press SPACE to resume';
+      this.ctx.fillText(resumeText, this.canvasSize / 2, this.canvasSize / 2 + 30);
     }
 
     // Draw start prompt if not moving
@@ -280,7 +411,8 @@ class SnakeGame {
       this.ctx.fillStyle = '#ffc233';
       this.ctx.font = '14px "IBM Plex Mono"';
       this.ctx.textAlign = 'center';
-      this.ctx.fillText('Press arrow keys to start', this.canvasSize / 2, this.canvasSize / 2);
+      const startText = this.isMobile ? 'Swipe or use buttons to start' : 'Press arrow keys to start';
+      this.ctx.fillText(startText, this.canvasSize / 2, this.canvasSize / 2);
     }
   }
 
@@ -358,6 +490,12 @@ class SnakeGame {
     }
 
     document.removeEventListener('keydown', this.keyHandler);
+
+    // Remove touch handlers
+    if (this.canvas && this.touchStartHandler && this.touchEndHandler) {
+      this.canvas.removeEventListener('touchstart', this.touchStartHandler);
+      this.canvas.removeEventListener('touchend', this.touchEndHandler);
+    }
 
     // Refocus terminal input
     setTimeout(() => {
