@@ -114,7 +114,7 @@ function registerCoreCommands(registry) {
 
   <span class="output-cyan">LinkedIn:</span>  <a href="https://bishopfox.com/blog/linkedin-introduces-insecurity" target="_blank" rel="noopener">No</a>
 
-  <span class="output-cyan">Twitter:</span>   <a href="https://twitter.com/tstoneb" target="_blank" rel="noopener">@tstoneb</a>
+  <span class="output-cyan">X:</span>         <a href="https://x.com/tstoneb" target="_blank" rel="noopener">@tstoneb</a>
 
   <span class="output-cyan">Goodreads:</span> <a href="https://www.goodreads.com/user/show/40625768" target="_blank" rel="noopener">40625768</a>
 
