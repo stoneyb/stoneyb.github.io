@@ -162,7 +162,10 @@ class Terminal {
   }
 
   scrollToBottom() {
-    this.bodyEl.scrollTop = this.bodyEl.scrollHeight;
+    // Use requestAnimationFrame for reliable mobile scrolling
+    requestAnimationFrame(() => {
+      this.bodyEl.scrollTop = this.bodyEl.scrollHeight;
+    });
   }
 
   focusInput() {
