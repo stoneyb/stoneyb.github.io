@@ -78,6 +78,33 @@ function registerEasterEggCommands(registry) {
   );
 
   registry.register(
+    "breakout",
+    (args, terminal) => {
+      terminal.print(
+        '\n<span class="output-accent">BREAKOUT</span>',
+        "response"
+      );
+      terminal.print(
+        '<span class="output-muted">Use arrow keys, A/D, or mouse to move paddle</span>',
+        "response"
+      );
+      terminal.print(
+        '<span class="output-muted">Press SPACE to pause, ESC to quit</span>\n',
+        "response"
+      );
+
+      if (window.BreakoutGame) {
+        const game = new BreakoutGame(terminal);
+        game.start();
+      }
+    },
+    {
+      description: "Play Breakout",
+      aliases: [],
+    }
+  );
+
+  registry.register(
     "coffee",
     (args, terminal) => {
       terminal.print(

@@ -5,11 +5,11 @@
 
 class Terminal {
   constructor() {
-    this.bodyEl = document.getElementById('terminal-body');
-    this.outputEl = document.getElementById('output');
-    this.inputEl = document.getElementById('terminal-input');
-    this.mirrorEl = document.getElementById('input-mirror');
-    this.cursorEl = document.querySelector('.cursor');
+    this.bodyEl = document.getElementById("terminal-body");
+    this.outputEl = document.getElementById("output");
+    this.inputEl = document.getElementById("terminal-input");
+    this.mirrorEl = document.getElementById("input-mirror");
+    this.cursorEl = document.querySelector(".cursor");
 
     this.history = new CommandHistory();
     this.commands = new CommandRegistry();
@@ -28,53 +28,59 @@ class Terminal {
 
   bindEvents() {
     // Handle input
-    this.inputEl.addEventListener('keydown', (e) => this.handleKeyDown(e));
+    this.inputEl.addEventListener("keydown", (e) => this.handleKeyDown(e));
 
     // Update cursor position on input
-    this.inputEl.addEventListener('input', () => this.updateCursor());
+    this.inputEl.addEventListener("input", () => this.updateCursor());
 
     // Click anywhere to focus input
-    document.addEventListener('click', (e) => {
+    document.addEventListener("click", (e) => {
       // Don't steal focus from links or game elements
-      if (e.target.tagName === 'A' || e.target.closest('.game-container')) {
+      if (e.target.tagName === "A" || e.target.closest(".game-container")) {
         return;
       }
       this.focusInput();
     });
 
     // Keep cursor synced
-    this.inputEl.addEventListener('focus', () => this.updateCursor());
-    this.inputEl.addEventListener('blur', () => this.updateCursor());
+    this.inputEl.addEventListener("focus", () => this.updateCursor());
+    this.inputEl.addEventListener("blur", () => this.updateCursor());
   }
 
   handleKeyDown(e) {
     switch (e.key) {
-      case 'Enter':
+      case "Enter":
         e.preventDefault();
         this.executeCommand();
         break;
 
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
         this.inputEl.value = this.history.navigateUp(this.inputEl.value);
         this.updateCursor();
         // Move cursor to end
-        this.inputEl.setSelectionRange(this.inputEl.value.length, this.inputEl.value.length);
+        this.inputEl.setSelectionRange(
+          this.inputEl.value.length,
+          this.inputEl.value.length
+        );
         break;
 
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
         this.inputEl.value = this.history.navigateDown();
         this.updateCursor();
-        this.inputEl.setSelectionRange(this.inputEl.value.length, this.inputEl.value.length);
+        this.inputEl.setSelectionRange(
+          this.inputEl.value.length,
+          this.inputEl.value.length
+        );
         break;
 
-      case 'Tab':
+      case "Tab":
         e.preventDefault();
         this.handleTabComplete();
         break;
 
-      case 'l':
+      case "l":
         // Ctrl+L to clear
         if (e.ctrlKey) {
           e.preventDefault();
@@ -82,12 +88,12 @@ class Terminal {
         }
         break;
 
-      case 'c':
+      case "c":
         // Ctrl+C to cancel
         if (e.ctrlKey) {
           e.preventDefault();
-          this.inputEl.value = '';
-          this.print('^C', 'response');
+          this.inputEl.value = "";
+          this.print("^C", "response");
           this.updateCursor();
         }
         break;
@@ -102,27 +108,30 @@ class Terminal {
     const allCommands = [];
     this.commands.commands.forEach((cmd, name) => {
       allCommands.push(name);
-      cmd.aliases.forEach(alias => allCommands.push(alias));
+      cmd.aliases.forEach((alias) => allCommands.push(alias));
     });
 
     // Find matches
-    const matches = allCommands.filter(cmd => cmd.startsWith(input));
+    const matches = allCommands.filter((cmd) => cmd.startsWith(input));
 
     if (matches.length === 1) {
-      this.inputEl.value = matches[0] + ' ';
+      this.inputEl.value = matches[0] + " ";
       this.updateCursor();
     } else if (matches.length > 1) {
-      this.print(`\n<span class="output-muted">${matches.join('  ')}</span>`, 'response');
+      this.print(
+        `\n<span class="output-muted">${matches.join("  ")}</span>`,
+        "response"
+      );
     }
   }
 
   executeCommand() {
     const input = this.inputEl.value.trim();
-    this.inputEl.value = '';
+    this.inputEl.value = "";
     this.updateCursor();
 
     if (!input) {
-      this.print('', 'command');
+      this.print("", "command");
       return;
     }
 
@@ -130,11 +139,11 @@ class Terminal {
     this.history.add(input);
 
     // Print the command
-    this.print(input, 'command');
+    this.print(input, "command");
 
     // Parse and execute
     const parts = input.match(/(?:[^\s"]+|"[^"]*")+/g) || [];
-    const [command, ...args] = parts.map(p => p.replace(/^"|"$/g, ''));
+    const [command, ...args] = parts.map((p) => p.replace(/^"|"$/g, ""));
 
     if (command) {
       this.commands.execute(command.toLowerCase(), args, this);
@@ -144,8 +153,8 @@ class Terminal {
     this.scrollToBottom();
   }
 
-  print(content, type = 'response') {
-    const line = document.createElement('div');
+  print(content, type = "response") {
+    const line = document.createElement("div");
     line.className = `output-line output-${type}`;
     line.innerHTML = content;
 
@@ -154,11 +163,14 @@ class Terminal {
   }
 
   printError(message) {
-    this.print(`<span class="output-error">Error:</span> ${message}`, 'response');
+    this.print(
+      `<span class="output-error">Error:</span> ${message}`,
+      "response"
+    );
   }
 
   clear() {
-    this.outputEl.innerHTML = '';
+    this.outputEl.innerHTML = "";
   }
 
   scrollToBottom() {
@@ -179,28 +191,38 @@ class Terminal {
     }
     // Show/hide cursor based on focus
     if (this.cursorEl) {
-      this.cursorEl.style.display = document.activeElement === this.inputEl ? 'inline-block' : 'none';
+      this.cursorEl.style.display =
+        document.activeElement === this.inputEl ? "inline-block" : "none";
     }
   }
 
   bootSequence() {
     const bootMessages = [
-      { text: '<span class="output-muted">Initializing terminal...</span>', delay: 0 },
-      { text: '<span class="output-muted">Loading modules...</span>', delay: 150 },
-      { text: '<span class="output-success">System ready.</span>', delay: 300 },
-      { text: '', delay: 400 },
-      { text: this.getWelcomeBanner(), delay: 500 },
-      { text: '', delay: 600 },
-      { text: '<span class="output-muted">Type</span> <span class="output-cyan">help</span> <span class="output-muted">to see available commands.</span>', delay: 700 },
-      { text: '', delay: 800 }
+      {
+        text: '<span class="output-muted">Initializing terminal...</span>',
+        delay: 0,
+      },
+      {
+        text: '<span class="output-muted">Loading modules...</span>',
+        delay: 50,
+      },
+      { text: '<span class="output-success">System ready.</span>', delay: 100 },
+      { text: "", delay: 150 },
+      { text: this.getWelcomeBanner(), delay: 200 },
+      { text: "", delay: 250 },
+      {
+        text: '<span class="output-muted">Type</span> <span class="output-cyan">help</span> <span class="output-muted">to see available commands.</span>',
+        delay: 300,
+      },
+      { text: "", delay: 350 },
     ];
 
     bootMessages.forEach(({ text, delay }) => {
       setTimeout(() => {
-        const line = document.createElement('div');
-        line.className = 'output-line boot-line';
+        const line = document.createElement("div");
+        line.className = "output-line boot-line";
         line.innerHTML = text;
-        line.style.animationDelay = `${delay}ms`;
+        // line.style.animationDelay = `${delay}ms`;
         this.outputEl.appendChild(line);
         this.scrollToBottom();
       }, delay);
@@ -220,6 +242,6 @@ class Terminal {
 }
 
 // Initialize terminal when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   window.terminal = new Terminal();
 });

@@ -36,12 +36,12 @@ function registerSystemCommands(registry) {
 <span class="output-accent">SECRETS FILE</span>
 <span class="output-muted">─────────────────────────────────</span>
 
-  Favorite editor: VS Code (don't tell the vim users)
-  Tabs vs Spaces: Spaces. Fight me.
-  Favorite language: TypeScript
-  Coffee order: Black, like my terminal
-  Hidden talent: Can debug CSS on the first try (sometimes)
-  Guilty pleasure: console.log debugging
+  ▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒
+  ░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌
+  ▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀
+  ▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░
+  █▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄
+  ▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓▒░▌█▄▀▓
 
 <span class="output-muted">─────────────────────────────────</span>
 <span class="output-muted">Now you know too much...</span>
