@@ -1,0 +1,25 @@
+{
+  "name": "tomstonebergdotcom",
+  "version": "1.0.0",
+  "description": "Tom Stoneberg's terminal portfolio",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stoneyb/stoneyb.github.io.git"
+  },
+  "keywords": [],
+  "author": "Tom Stoneberg",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stoneyb/stoneyb.github.io/issues"
+  },
+  "homepage": "https://github.com/stoneyb/stoneyb.github.io#readme",
+  "devDependencies": {
+    "vite": "^6.4.1"
+  }
+}
