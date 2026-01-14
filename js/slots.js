@@ -387,13 +387,13 @@ class SlotMachineGame {
       if (!isJackpot) {
         if (winningReels.length === 2) {
           // Small win (2 match)
-          this.spawnParticles(6, winColor, 40);
+          this.spawnParticles(6, winColor, 60);
         } else if (r1 <= 2) {
           // Big win (3 high-value symbols: 7, $, *)
-          this.spawnParticles(14, winColor, 80);
+          this.spawnParticles(14, winColor, 100);
         } else {
           // Medium win (3 match lower symbols)
-          this.spawnParticles(10, winColor, 60);
+          this.spawnParticles(10, winColor, 80);
         }
       }
 
@@ -568,7 +568,7 @@ class SlotMachineGame {
       ctx.fillText(
         `WIN: ${this.lastWin}`,
         this.canvasWidth / 2,
-        this.canvasHeight - 40
+        this.canvasHeight - 8
       );
     }
 
