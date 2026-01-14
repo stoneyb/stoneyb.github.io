@@ -59,6 +59,12 @@ class BreakoutGame {
   }
 
   start() {
+    // Dismiss keyboard on mobile
+    if (this.isMobile) {
+      const input = document.getElementById("terminal-input");
+      if (input) input.blur();
+    }
+
     this.createGameArea();
     this.initBricks();
     this.resetBall();

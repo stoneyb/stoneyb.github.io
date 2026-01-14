@@ -105,6 +105,45 @@ function registerEasterEggCommands(registry) {
   );
 
   registry.register(
+    "slots",
+    (args, terminal) => {
+      // Handle reset command
+      if (args[0] === "reset") {
+        if (window.SlotMachineGame) {
+          SlotMachineGame.resetBalance();
+          terminal.print(
+            '<span class="output-success">Balance reset to 100!</span>',
+            "response"
+          );
+        }
+        return;
+      }
+
+      terminal.print(
+        '\n<span class="output-accent">LUCKY TERMINAL SLOTS</span>',
+        "response"
+      );
+      terminal.print(
+        '<span class="output-muted">Use buttons to play | ESC to quit</span>',
+        "response"
+      );
+      terminal.print(
+        '<span class="output-muted">Type "slots reset" to reset balance</span>\n',
+        "response"
+      );
+
+      if (window.SlotMachineGame) {
+        const game = new SlotMachineGame(terminal);
+        game.start();
+      }
+    },
+    {
+      description: "Play Slots",
+      aliases: ["slot"],
+    }
+  );
+
+  registry.register(
     "coffee",
     (args, terminal) => {
       terminal.print(

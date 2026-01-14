@@ -149,7 +149,6 @@ function registerCoreCommands(registry) {
 <span class="output-cyan">drwxr-xr-x</span>  <span class="output-muted">tom</span>  <span class="output-accent">about/</span>
 <span class="output-cyan">drwxr-xr-x</span>  <span class="output-muted">tom</span>  <span class="output-accent">resume/</span>
 <span class="output-cyan">drwxr-xr-x</span>  <span class="output-muted">tom</span>  <span class="output-accent">contact/</span>
-<span class="output-cyan">drwxr-xr-x</span>  <span class="output-muted">tom</span>  <span class="output-accent">projects/</span>
 <span class="output-cyan">-rw-r--r--</span>  <span class="output-muted">tom</span>  <span class="output-muted">README.md</span>
 <span class="output-cyan">-rw-r--r--</span>  <span class="output-muted">tom</span>  <span class="output-muted">.secrets</span>
 `,
