@@ -12,7 +12,7 @@ class SlotMachineGame {
 
     // Canvas settings
     this.canvasWidth = 360;
-    this.canvasHeight = 280;
+    this.canvasHeight = 240;
 
     // Reel settings
     this.reelWidth = 100;
@@ -51,6 +51,7 @@ class SlotMachineGame {
     this.winHighlight = null; // { reels: [0,1,2], frame: 0, color: '#fff' }
     this.winHighlightDuration = 60; // ~1 second at 60fps
     this.showPaytable = false;
+    this.particles = []; // Array of { x, y, vx, vy, color, size, life, maxLife }
 
     // Mobile detection
     this.isMobile =
@@ -382,6 +383,20 @@ class SlotMachineGame {
       };
       this.animateWinHighlight();
 
+      // Spawn particles based on win type (not for jackpot - it has its own effects)
+      if (!isJackpot) {
+        if (winningReels.length === 2) {
+          // Small win (2 match)
+          this.spawnParticles(6, winColor, 40);
+        } else if (r1 <= 2) {
+          // Big win (3 high-value symbols: 7, $, *)
+          this.spawnParticles(14, winColor, 80);
+        } else {
+          // Medium win (3 match lower symbols)
+          this.spawnParticles(10, winColor, 60);
+        }
+      }
+
       if (isJackpot) {
         this.terminal.print(
           `\n<span class="output-success">*** JACKPOT! ***</span> You won <span class="output-accent">${winAmount}</span>!`,
@@ -429,6 +444,61 @@ class SlotMachineGame {
     }
   }
 
+  spawnParticles(count, color, duration) {
+    // Spawn particles from center of reels area
+    const centerX =
+      this.reelStartX + (3 * this.reelWidth + 2 * this.reelGap) / 2;
+    const centerY = this.reelStartY + this.reelHeight / 2;
+
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2 + Math.random() * 0.5;
+      const speed = 2 + Math.random() * 3;
+      this.particles.push({
+        x: centerX,
+        y: centerY,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 1, // slight upward bias
+        color: color,
+        size: 4 + Math.random() * 4,
+        life: duration,
+        maxLife: duration,
+      });
+    }
+    this.animateParticles();
+  }
+
+  animateParticles() {
+    if (this.particles.length === 0 || !this.isRunning) return;
+
+    // Update particles
+    this.particles = this.particles.filter((p) => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.1; // gravity
+      p.life--;
+      return p.life > 0;
+    });
+
+    this.draw();
+
+    if (this.particles.length > 0) {
+      requestAnimationFrame(() => this.animateParticles());
+    }
+  }
+
+  drawParticles() {
+    const ctx = this.ctx;
+    this.particles.forEach((p) => {
+      const alpha = p.life / p.maxLife;
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size * alpha, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+  }
+
   updateDisplay() {
     const balanceEl = document.getElementById("slots-balance");
     const betEl = document.getElementById("slots-bet");
@@ -445,11 +515,6 @@ class SlotMachineGame {
     // Background
     ctx.fillStyle = "#0a0a0f";
     ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-
-    // // Machine frame
-    // ctx.strokeStyle = "#ffc233";
-    // ctx.lineWidth = 3;
-    // ctx.strokeRect(10, 10, this.canvasWidth - 20, this.canvasHeight - 20);
 
     // Title
     ctx.fillStyle = "#ffc233";
@@ -490,6 +555,11 @@ class SlotMachineGame {
     ctx.lineTo(this.reelStartX + 3 * this.reelWidth + 2 * this.reelGap, lineY);
     ctx.stroke();
     ctx.setLineDash([]);
+
+    // Draw particles
+    if (this.particles.length > 0) {
+      this.drawParticles();
+    }
 
     // Last win display
     if (this.lastWin > 0 && !this.spinning) {
