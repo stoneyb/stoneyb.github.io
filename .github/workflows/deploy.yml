@@ -16,40 +16,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Cache bust assets
-        run: |
-          # Get short commit SHA for cache busting
-          VERSION=$(git rev-parse --short HEAD)
-          echo "Cache busting with version: ${VERSION}"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-          # Update CSS link with version
-          # First remove any existing version parameter, then add new one
-          sed -i "s|href=\"styles/main.css?v=[^\"]*\"|href=\"styles/main.css?v=${VERSION}\"|g" index.html
-          sed -i "s|href=\"styles/main.css\"|href=\"styles/main.css?v=${VERSION}\"|g" index.html
+      - name: Install dependencies
+        run: npm ci
 
-          # Update JS files with version
-          # First remove any existing version parameter, then add new one
-          sed -i "s|src=\"js/history.js?v=[^\"]*\"|src=\"js/history.js?v=${VERSION}\"|g" index.html
-          sed -i "s|src=\"js/history.js\"|src=\"js/history.js?v=${VERSION}\"|g" index.html
-
-          sed -i "s|src=\"js/commands.js?v=[^\"]*\"|src=\"js/commands.js?v=${VERSION}\"|g" index.html
-          sed -i "s|src=\"js/commands.js\"|src=\"js/commands.js?v=${VERSION}\"|g" index.html
-
-          sed -i "s|src=\"js/matrix.js?v=[^\"]*\"|src=\"js/matrix.js?v=${VERSION}\"|g" index.html
-          sed -i "s|src=\"js/matrix.js\"|src=\"js/matrix.js?v=${VERSION}\"|g" index.html
-
-          sed -i "s|src=\"js/snake.js?v=[^\"]*\"|src=\"js/snake.js?v=${VERSION}\"|g" index.html
-          sed -i "s|src=\"js/snake.js\"|src=\"js/snake.js?v=${VERSION}\"|g" index.html
-
-          sed -i "s|src=\"js/terminal.js?v=[^\"]*\"|src=\"js/terminal.js?v=${VERSION}\"|g" index.html
-          sed -i "s|src=\"js/terminal.js\"|src=\"js/terminal.js?v=${VERSION}\"|g" index.html
-
-          # Verify changes
-          echo "Updated index.html:"
-          grep -E "(href=\"styles/main.css|src=\"js/)" index.html
+      - name: Build
+        run: npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
+          publish_dir: dist

@@ -3,7 +3,7 @@
    Classic snake game in the terminal
    ======================================== */
 
-class SnakeGame {
+export class SnakeGame {
   constructor(terminal) {
     this.terminal = terminal;
     this.canvas = null;
@@ -568,6 +568,3 @@ class SnakeGame {
     }, 100);
   }
 }
-
-// Export for use in commands.js
-window.SnakeGame = SnakeGame;

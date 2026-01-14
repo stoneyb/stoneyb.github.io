@@ -3,7 +3,7 @@
    Classic brick-breaking paddle game
    ======================================== */
 
-class BreakoutGame {
+export class BreakoutGame {
   constructor(terminal) {
     this.terminal = terminal;
     this.canvas = null;
@@ -608,6 +608,3 @@ class BreakoutGame {
     }, 100);
   }
 }
-
-// Export for use in commands
-window.BreakoutGame = BreakoutGame;

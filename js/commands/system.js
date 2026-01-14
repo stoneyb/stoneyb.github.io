@@ -3,7 +3,7 @@
    Unix-like utility commands
    ======================================== */
 
-function registerSystemCommands(registry) {
+export function registerSystemCommands(registry) {
   registry.register(
     "date",
     (args, terminal) => {
@@ -207,5 +207,3 @@ Try typing random things and see what happens!
     }
   );
 }
-
-window.registerSystemCommands = registerSystemCommands;

@@ -17,3 +17,9 @@ npm-debug.log*
 # Environment variables
 .env
 .env.local
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/

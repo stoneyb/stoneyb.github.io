@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "WebSearch"
+      "WebSearch",
+      "Bash(wc:*)",
+      "Bash(git -C /Users/tomstoneberg/code/tomstonebergdotcom log --oneline -10)"
     ]
   }
 }

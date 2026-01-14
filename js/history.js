@@ -3,7 +3,7 @@
    Handles up/down arrow navigation
    ======================================== */
 
-class CommandHistory {
+export class CommandHistory {
   constructor(maxSize = 50) {
     this.history = [];
     this.index = -1;
@@ -69,6 +69,3 @@ class CommandHistory {
     return [...this.history];
   }
 }
-
-// Export for use in terminal.js
-window.CommandHistory = CommandHistory;

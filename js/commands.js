@@ -3,7 +3,12 @@
    Core registry class - commands are loaded from js/commands/
    ======================================== */
 
-class CommandRegistry {
+import { registerCoreCommands } from './commands/core.js';
+import { registerEasterEggCommands } from './commands/easter-eggs.js';
+import { registerSystemCommands } from './commands/system.js';
+import { registerHiddenCommands } from './commands/hidden.js';
+
+export class CommandRegistry {
   constructor() {
     this.commands = new Map();
     this.aliases = new Map();
@@ -53,21 +58,9 @@ class CommandRegistry {
   }
 
   registerAll() {
-    // Load commands from separate modules
-    if (window.registerCoreCommands) {
-      window.registerCoreCommands(this);
-    }
-    if (window.registerEasterEggCommands) {
-      window.registerEasterEggCommands(this);
-    }
-    if (window.registerSystemCommands) {
-      window.registerSystemCommands(this);
-    }
-    if (window.registerHiddenCommands) {
-      window.registerHiddenCommands(this);
-    }
+    registerCoreCommands(this);
+    registerEasterEggCommands(this);
+    registerSystemCommands(this);
+    registerHiddenCommands(this);
   }
 }
-
-// Export for use in terminal.js
-window.CommandRegistry = CommandRegistry;

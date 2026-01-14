@@ -3,7 +3,12 @@
    Fun hidden commands
    ======================================== */
 
-function registerEasterEggCommands(registry) {
+import { MatrixRain } from '../matrix.js';
+import { SnakeGame } from '../snake.js';
+import { BreakoutGame } from '../breakout.js';
+import { SlotMachineGame } from '../slots.js';
+
+export function registerEasterEggCommands(registry) {
   registry.register(
     "sudo",
     (args, terminal) => {
@@ -39,10 +44,8 @@ function registerEasterEggCommands(registry) {
         "response"
       );
 
-      if (window.MatrixRain) {
-        const matrix = new MatrixRain();
-        matrix.start(15000);
-      }
+      const matrix = new MatrixRain();
+      matrix.start(15000);
     },
     {
       description: "Enter the Matrix",
@@ -66,10 +69,8 @@ function registerEasterEggCommands(registry) {
         "response"
       );
 
-      if (window.SnakeGame) {
-        const game = new SnakeGame(terminal);
-        game.start();
-      }
+      const game = new SnakeGame(terminal);
+      game.start();
     },
     {
       description: "Play Snake",
@@ -93,10 +94,8 @@ function registerEasterEggCommands(registry) {
         "response"
       );
 
-      if (window.BreakoutGame) {
-        const game = new BreakoutGame(terminal);
-        game.start();
-      }
+      const game = new BreakoutGame(terminal);
+      game.start();
     },
     {
       description: "Play Breakout",
@@ -109,13 +108,11 @@ function registerEasterEggCommands(registry) {
     (args, terminal) => {
       // Handle reset command
       if (args[0] === "reset") {
-        if (window.SlotMachineGame) {
-          SlotMachineGame.resetBalance();
-          terminal.print(
-            '<span class="output-success">Balance reset to 100!</span>',
-            "response"
-          );
-        }
+        SlotMachineGame.resetBalance();
+        terminal.print(
+          '<span class="output-success">Balance reset to 100!</span>',
+          "response"
+        );
         return;
       }
 
@@ -132,10 +129,8 @@ function registerEasterEggCommands(registry) {
         "response"
       );
 
-      if (window.SlotMachineGame) {
-        const game = new SlotMachineGame(terminal);
-        game.start();
-      }
+      const game = new SlotMachineGame(terminal);
+      game.start();
     },
     {
       description: "Play Slots",
@@ -283,5 +278,3 @@ ${bottom}
     }
   );
 }
-
-window.registerEasterEggCommands = registerEasterEggCommands;

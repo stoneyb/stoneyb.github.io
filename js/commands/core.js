@@ -3,7 +3,7 @@
    Main user-facing commands
    ======================================== */
 
-function registerCoreCommands(registry) {
+export function registerCoreCommands(registry) {
   registry.register(
     "help",
     (args, terminal) => {
@@ -161,5 +161,3 @@ function registerCoreCommands(registry) {
     }
   );
 }
-
-window.registerCoreCommands = registerCoreCommands;

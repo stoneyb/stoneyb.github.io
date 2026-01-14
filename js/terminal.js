@@ -3,7 +3,10 @@
    Core terminal functionality
    ======================================== */
 
-class Terminal {
+import { CommandHistory } from './history.js';
+import { CommandRegistry } from './commands.js';
+
+export class Terminal {
   constructor() {
     this.bodyEl = document.getElementById("terminal-body");
     this.outputEl = document.getElementById("output");
@@ -240,8 +243,3 @@ class Terminal {
 <span class="output-accent">Welcome to my terminal.</span> <span class="output-muted">Explore, discover, and have fun!</span>`;
   }
 }
-
-// Initialize terminal when DOM is ready
-document.addEventListener("DOMContentLoaded", () => {
-  window.terminal = new Terminal();
-});

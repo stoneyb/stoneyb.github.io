@@ -3,7 +3,7 @@
    Secret link commands
    ======================================== */
 
-function registerHiddenCommands(registry) {
+export function registerHiddenCommands(registry) {
   registry.register(
     "dn",
     (args, terminal) => {
@@ -51,5 +51,3 @@ function registerHiddenCommands(registry) {
     }
   );
 }
-
-window.registerHiddenCommands = registerHiddenCommands;

@@ -3,7 +3,7 @@
    Classic 3-reel slot machine in the terminal
    ======================================== */
 
-class SlotMachineGame {
+export class SlotMachineGame {
   constructor(terminal) {
     this.terminal = terminal;
     this.canvas = null;
@@ -779,6 +779,3 @@ class SlotMachineGame {
     localStorage.setItem("slotsTotalWinnings", "0");
   }
 }
-
-// Export for use in commands
-window.SlotMachineGame = SlotMachineGame;

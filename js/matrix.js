@@ -3,7 +3,7 @@
    Canvas-based falling code animation
    ======================================== */
 
-class MatrixRain {
+export class MatrixRain {
   constructor() {
     this.canvas = null;
     this.ctx = null;
@@ -145,6 +145,3 @@ class MatrixRain {
     if (input) input.focus();
   }
 }
-
-// Export for use in commands.js
-window.MatrixRain = MatrixRain;
