@@ -105,21 +105,15 @@ export function registerCoreCommands(registry) {
     (args, terminal) => {
       terminal.print(
         `
-<span class="output-accent">Get In Touch</span>
-<span class="output-muted">─────────────────────────────────</span>
+<span class="output-accent">[CONTACT OPTIONS]</span>
 
-  <span class="output-cyan">Email:</span>     <a href="mailto:hello@tomstoneberg.com">hello@tomstoneberg.com</a>
+<span class="output-cyan">[1]</span> Email    → <a href="mailto:hello@tomstoneberg.com">hello@tomstoneberg.com</a>
+<span class="output-cyan">[2]</span> GitHub   → <a href="https://github.com/stoneyb" target="_blank" rel="noopener">github.com/stoneyb</a>
+<span class="output-cyan">[3]</span> X        → <a href="https://x.com/tstoneb" target="_blank" rel="noopener">@tstoneb</a>
+<span class="output-cyan">[4]</span> Reading  → <a href="https://www.goodreads.com/user/show/40625768" target="_blank" rel="noopener">Goodreads Profile</a>
+<span class="output-cyan">[5]</span> LinkedIn → <a href="https://bishopfox.com/blog/linkedin-introduces-insecurity" target="_blank" rel="noopener">No</a>
 
-  <span class="output-cyan">GitHub:</span>    <a href="https://github.com/stoneyb" target="_blank" rel="noopener">github.com/stoneyb</a>
-
-  <span class="output-cyan">LinkedIn:</span>  <a href="https://bishopfox.com/blog/linkedin-introduces-insecurity" target="_blank" rel="noopener">No</a>
-
-  <span class="output-cyan">X:</span>         <a href="https://x.com/tstoneb" target="_blank" rel="noopener">@tstoneb</a>
-
-  <span class="output-cyan">Goodreads:</span> <a href="https://www.goodreads.com/user/show/40625768" target="_blank" rel="noopener">40625768</a>
-
-<span class="output-muted">─────────────────────────────────</span>
-<span class="output-muted">Feel free to reach out!</span>
+<span class="output-muted">Type number or name to visit</span>
 `,
         "response"
       );
