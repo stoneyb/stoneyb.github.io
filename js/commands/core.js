@@ -89,7 +89,7 @@ export function registerCoreCommands(registry) {
   <span class="output-accent">Nasdaq OMX</span>                   <span class="output-muted">May 2010 - Apr 2012</span>
 
 <span class="output-muted">───────────────────────────────────────────────</span>
-<span class="output-success">↓</span> <a href="assets/TomStonebergResumeJan2026.pdf" target="_blank" rel="noopener">View Full Resume (PDF)</a>
+<span class="output-success">↓</span> <a href="/assets/TomStonebergResumeJan2026.pdf" target="_blank" rel="noopener">View Full Resume (PDF)</a>
 `,
         "response"
       );
