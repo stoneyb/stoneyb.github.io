@@ -6,7 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:desktop": "playwright test --project=chromium",
+    "test:mobile": "playwright test --project=mobile-iphone-16",
+    "test:mobile:headed": "playwright test --project=mobile-iphone-16 --headed"
   },
   "repository": {
     "type": "git",
@@ -20,6 +25,8 @@
   },
   "homepage": "https://github.com/stoneyb/stoneyb.github.io#readme",
   "devDependencies": {
-    "vite": "^6.4.1"
+    "vite": "^6.4.1",
+    "@playwright/test": "^1.49.1",
+    "wait-on": "^8.0.1"
   }
 }
