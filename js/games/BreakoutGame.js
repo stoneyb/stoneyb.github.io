@@ -3,46 +3,49 @@
    Classic brick-breaking paddle game
    ======================================== */
 
-export class BreakoutGame {
+import { BaseGame } from './BaseGame.js';
+import { CONFIG } from '../config/config.js';
+import { getHighScore, setHighScore } from '../utils/storage.js';
+
+export class BreakoutGame extends BaseGame {
   constructor(terminal) {
-    this.terminal = terminal;
-    this.canvas = null;
-    this.ctx = null;
-    this.container = null;
+    super(terminal);
+
+    // Get config
+    const config = CONFIG.games.breakout;
 
     // Canvas settings
-    this.canvasWidth = 400;
-    this.canvasHeight = 300;
+    this.canvasWidth = config.canvasWidth;
+    this.canvasHeight = config.canvasHeight;
 
     // Paddle settings
-    this.paddleWidth = 70;
-    this.paddleHeight = 10;
+    this.paddleWidth = config.paddleWidth;
+    this.paddleHeight = config.paddleHeight;
     this.paddleX = 0;
-    this.paddleSpeed = 8;
+    this.paddleSpeed = config.paddleSpeed;
 
     // Ball settings
-    this.ballRadius = 6;
+    this.ballRadius = config.ballRadius;
     this.ballX = 0;
     this.ballY = 0;
-    this.ballDX = 4;
-    this.ballDY = -4;
+    this.ballDX = config.ballSpeed;
+    this.ballDY = -config.ballSpeed;
 
     // Brick settings
-    this.brickRowCount = 5;
-    this.brickColumnCount = 8;
-    this.brickWidth = 45;
-    this.brickHeight = 15;
-    this.brickPadding = 2;
-    this.brickOffsetTop = 30;
-    this.brickOffsetLeft = 13;
+    this.brickRowCount = config.brickRowCount;
+    this.brickColumnCount = config.brickColumnCount;
+    this.brickWidth = config.brickWidth;
+    this.brickHeight = config.brickHeight;
+    this.brickPadding = config.brickPadding;
+    this.brickOffsetTop = config.brickOffsetTop;
+    this.brickOffsetLeft = config.brickOffsetLeft;
     this.bricks = [];
 
     // Game state
     this.score = 0;
-    this.lives = 3;
+    this.lives = config.lives;
     this.level = 1;
-    this.highScore = parseInt(localStorage.getItem("breakoutHighScore") || "0");
-    this.isRunning = false;
+    this.highScore = getHighScore('breakoutHighScore');
     this.isPaused = false;
     this.gameLoop = null;
     this.leftPressed = false;
@@ -50,102 +53,77 @@ export class BreakoutGame {
 
     // Touch state
     this.touchX = null;
-    this.isMobile =
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      ) ||
-      "ontouchstart" in window ||
-      navigator.maxTouchPoints > 0;
   }
 
   start() {
-    // Dismiss keyboard on mobile
-    if (this.isMobile) {
-      const input = document.getElementById("terminal-input");
-      if (input) input.blur();
-    }
+    this.dismissKeyboard();
 
-    this.createGameArea();
-    this.initBricks();
-    this.resetBall();
-    this.paddleX = (this.canvasWidth - this.paddleWidth) / 2;
-    this.bindControls();
-    this.isRunning = true;
-    this.gameLoop = setInterval(() => this.update(), 16);
-  }
-
-  createGameArea() {
-    this.container = document.createElement("div");
-    this.container.className = "game-container";
-
-    this.canvas = document.createElement("canvas");
-    this.canvas.width = this.canvasWidth;
-    this.canvas.height = this.canvasHeight;
-    this.canvas.className = "breakout-canvas";
-
-    const info = document.createElement("div");
-    info.className = "game-info";
-    info.id = "breakout-info";
-    info.innerHTML = `
+    const infoHTML = `
       Score: <span id="breakout-score">0</span> |
-      Lives: <span id="breakout-lives">3</span> |
+      Lives: <span id="breakout-lives">${this.lives}</span> |
       Level: <span id="breakout-level">1</span> |
       Best: <span id="breakout-high">${this.highScore}</span>
     `;
-
-    this.container.appendChild(this.canvas);
-    this.container.appendChild(info);
+    this.createGameArea(
+      this.canvasWidth,
+      this.canvasHeight,
+      'breakout-canvas',
+      infoHTML,
+      'breakout-info'
+    );
 
     // Mobile controls
     if (this.isMobile) {
       this.createMobileControls();
     }
 
-    this.terminal.outputEl.appendChild(this.container);
-    this.ctx = this.canvas.getContext("2d");
-
-    this.container.scrollIntoView({ behavior: "smooth", block: "center" });
+    this.initBricks();
+    this.resetBall();
+    this.paddleX = (this.canvasWidth - this.paddleWidth) / 2;
+    this.bindControls();
+    this.isRunning = true;
+    this.gameLoop = setInterval(() => this.update(), CONFIG.games.breakout.updateInterval);
   }
 
   createMobileControls() {
-    const controlsContainer = document.createElement("div");
-    controlsContainer.className = "breakout-mobile-controls";
+    const controlsContainer = document.createElement('div');
+    controlsContainer.className = 'breakout-mobile-controls';
 
-    const leftBtn = document.createElement("button");
-    leftBtn.className = "breakout-btn breakout-btn-left";
-    leftBtn.innerHTML = "◀";
-    leftBtn.setAttribute("aria-label", "Move left");
+    const leftBtn = document.createElement('button');
+    leftBtn.className = 'breakout-btn breakout-btn-left';
+    leftBtn.innerHTML = '◀';
+    leftBtn.setAttribute('aria-label', 'Move left');
 
-    const pauseBtn = document.createElement("button");
-    pauseBtn.className = "breakout-btn breakout-btn-pause";
-    pauseBtn.innerHTML = "⏸";
-    pauseBtn.setAttribute("aria-label", "Pause");
+    const pauseBtn = document.createElement('button');
+    pauseBtn.className = 'breakout-btn breakout-btn-pause';
+    pauseBtn.innerHTML = '⏸';
+    pauseBtn.setAttribute('aria-label', 'Pause');
 
-    const rightBtn = document.createElement("button");
-    rightBtn.className = "breakout-btn breakout-btn-right";
-    rightBtn.innerHTML = "▶";
-    rightBtn.setAttribute("aria-label", "Move right");
+    const rightBtn = document.createElement('button');
+    rightBtn.className = 'breakout-btn breakout-btn-right';
+    rightBtn.innerHTML = '▶';
+    rightBtn.setAttribute('aria-label', 'Move right');
 
     // Touch events for continuous movement
-    leftBtn.addEventListener("touchstart", (e) => {
+    leftBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
       this.leftPressed = true;
     });
-    leftBtn.addEventListener("touchend", () => (this.leftPressed = false));
-    leftBtn.addEventListener("mousedown", () => (this.leftPressed = true));
-    leftBtn.addEventListener("mouseup", () => (this.leftPressed = false));
-    leftBtn.addEventListener("mouseleave", () => (this.leftPressed = false));
+    leftBtn.addEventListener('touchend', () => (this.leftPressed = false));
+    leftBtn.addEventListener('mousedown', () => (this.leftPressed = true));
+    leftBtn.addEventListener('mouseup', () => (this.leftPressed = false));
+    leftBtn.addEventListener('mouseleave', () => (this.leftPressed = false));
 
-    rightBtn.addEventListener("touchstart", (e) => {
+    rightBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
       this.rightPressed = true;
     });
-    rightBtn.addEventListener("touchend", () => (this.rightPressed = false));
-    rightBtn.addEventListener("mousedown", () => (this.rightPressed = true));
-    rightBtn.addEventListener("mouseup", () => (this.rightPressed = false));
-    rightBtn.addEventListener("mouseleave", () => (this.rightPressed = false));
+    rightBtn.addEventListener('touchend', () => (this.rightPressed = false));
+    rightBtn.addEventListener('mousedown', () => (this.rightPressed = true));
+    rightBtn.addEventListener('mouseup', () => (this.rightPressed = false));
+    rightBtn.addEventListener('mouseleave', () => (this.rightPressed = false));
 
-    pauseBtn.addEventListener("click", () => {
+    pauseBtn.addEventListener('click', () => {
       this.isPaused = !this.isPaused;
     });
 
@@ -153,45 +131,6 @@ export class BreakoutGame {
     controlsContainer.appendChild(pauseBtn);
     controlsContainer.appendChild(rightBtn);
     this.container.appendChild(controlsContainer);
-
-    this.injectMobileStyles();
-  }
-
-  injectMobileStyles() {
-    if (document.getElementById("breakout-mobile-styles")) return;
-
-    const style = document.createElement("style");
-    style.id = "breakout-mobile-styles";
-    style.textContent = `
-      .breakout-mobile-controls {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin-top: 10px;
-      }
-
-      .breakout-btn {
-        width: 60px;
-        height: 50px;
-        font-size: 24px;
-        background: rgba(212, 160, 23, 0.2);
-        border: 2px solid var(--amber-dim);
-        border-radius: 8px;
-        color: var(--amber);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        user-select: none;
-        -webkit-user-select: none;
-        touch-action: manipulation;
-      }
-
-      .breakout-btn:active {
-        background: rgba(212, 160, 23, 0.4);
-      }
-    `;
-    document.head.appendChild(style);
   }
 
   initBricks() {
@@ -218,36 +157,36 @@ export class BreakoutGame {
     this.keyDownHandler = (e) => {
       if (!this.isRunning) return;
 
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         this.stop();
         this.terminal.print(
           '\n<span class="output-muted">Game ended. Type "breakout" to play again!</span>\n',
-          "response"
+          'response'
         );
         return;
       }
 
-      if (e.key === " ") {
+      if (e.key === ' ') {
         e.preventDefault();
         this.isPaused = !this.isPaused;
         return;
       }
 
-      if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
         this.leftPressed = true;
         e.preventDefault();
       }
-      if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") {
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
         this.rightPressed = true;
         e.preventDefault();
       }
     };
 
     this.keyUpHandler = (e) => {
-      if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
         this.leftPressed = false;
       }
-      if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") {
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
         this.rightPressed = false;
       }
     };
@@ -273,10 +212,10 @@ export class BreakoutGame {
       }
     };
 
-    document.addEventListener("keydown", this.keyDownHandler);
-    document.addEventListener("keyup", this.keyUpHandler);
-    this.canvas.addEventListener("mousemove", this.mouseMoveHandler);
-    this.canvas.addEventListener("touchmove", this.touchMoveHandler, {
+    document.addEventListener('keydown', this.keyDownHandler);
+    document.addEventListener('keyup', this.keyUpHandler);
+    this.canvas.addEventListener('mousemove', this.mouseMoveHandler);
+    this.canvas.addEventListener('touchmove', this.touchMoveHandler, {
       passive: false,
     });
   }
@@ -413,10 +352,10 @@ export class BreakoutGame {
   }
 
   updateDisplay() {
-    const scoreEl = document.getElementById("breakout-score");
-    const livesEl = document.getElementById("breakout-lives");
-    const levelEl = document.getElementById("breakout-level");
-    const highEl = document.getElementById("breakout-high");
+    const scoreEl = document.getElementById('breakout-score');
+    const livesEl = document.getElementById('breakout-lives');
+    const levelEl = document.getElementById('breakout-level');
+    const highEl = document.getElementById('breakout-high');
 
     if (scoreEl) scoreEl.textContent = this.score;
     if (livesEl) livesEl.textContent = this.lives;
@@ -424,17 +363,14 @@ export class BreakoutGame {
 
     if (this.score > this.highScore) {
       this.highScore = this.score;
-      localStorage.setItem("breakoutHighScore", this.highScore.toString());
+      setHighScore('breakoutHighScore', this.highScore);
       if (highEl) highEl.textContent = this.highScore;
     }
   }
 
   draw() {
-    const ctx = this.ctx;
-
     // Clear canvas
-    ctx.fillStyle = "#0a0a0f";
-    ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+    this.clearCanvas('#0a0a0f');
 
     // Draw bricks
     for (let c = 0; c < this.brickColumnCount; c++) {
@@ -448,20 +384,20 @@ export class BreakoutGame {
           // Color gradient based on row
           const hue = 35 + r * 5;
           const lightness = 55 - r * 5;
-          ctx.fillStyle = `hsl(${hue}, 80%, ${lightness}%)`;
-          ctx.shadowColor = `hsl(${hue}, 80%, ${lightness}%)`;
-          ctx.shadowBlur = 5;
+          this.ctx.fillStyle = `hsl(${hue}, 80%, ${lightness}%)`;
+          this.ctx.shadowColor = `hsl(${hue}, 80%, ${lightness}%)`;
+          this.ctx.shadowBlur = 5;
 
           this.roundRect(brickX, brickY, this.brickWidth, this.brickHeight, 3);
         }
       }
     }
-    ctx.shadowBlur = 0;
+    this.ctx.shadowBlur = 0;
 
     // Draw paddle
-    ctx.fillStyle = "#ffc233";
-    ctx.shadowColor = "#ffc233";
-    ctx.shadowBlur = 8;
+    this.ctx.fillStyle = '#ffc233';
+    this.ctx.shadowColor = '#ffc233';
+    this.ctx.shadowBlur = 8;
     this.roundRect(
       this.paddleX,
       this.canvasHeight - this.paddleHeight - 5,
@@ -469,78 +405,58 @@ export class BreakoutGame {
       this.paddleHeight,
       4
     );
-    ctx.shadowBlur = 0;
+    this.ctx.shadowBlur = 0;
 
     // Draw ball
-    ctx.fillStyle = "#fff";
-    ctx.shadowColor = "#ffc233";
-    ctx.shadowBlur = 10;
-    ctx.beginPath();
-    ctx.arc(this.ballX, this.ballY, this.ballRadius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
+    this.ctx.fillStyle = '#fff';
+    this.ctx.shadowColor = '#ffc233';
+    this.ctx.shadowBlur = 10;
+    this.ctx.beginPath();
+    this.ctx.arc(this.ballX, this.ballY, this.ballRadius, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.shadowBlur = 0;
 
     // Pause overlay
     if (this.isPaused) {
-      ctx.fillStyle = "rgba(5, 5, 10, 0.7)";
-      ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+      this.ctx.fillStyle = 'rgba(5, 5, 10, 0.7)';
+      this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-      ctx.fillStyle = "#ffc233";
-      ctx.font = 'bold 24px "IBM Plex Mono"';
-      ctx.textAlign = "center";
-      ctx.fillText("PAUSED", this.canvasWidth / 2, this.canvasHeight / 2);
+      this.ctx.fillStyle = '#ffc233';
+      this.ctx.font = 'bold 24px "IBM Plex Mono"';
+      this.ctx.textAlign = 'center';
+      this.ctx.fillText('PAUSED', this.canvasWidth / 2, this.canvasHeight / 2);
 
-      ctx.font = '14px "IBM Plex Mono"';
-      ctx.fillStyle = "#9ca3af";
+      this.ctx.font = '14px "IBM Plex Mono"';
+      this.ctx.fillStyle = '#9ca3af';
       const text = this.isMobile
-        ? "Tap pause to resume"
-        : "Press SPACE to resume";
-      ctx.fillText(text, this.canvasWidth / 2, this.canvasHeight / 2 + 30);
+        ? 'Tap pause to resume'
+        : 'Press SPACE to resume';
+      this.ctx.fillText(text, this.canvasWidth / 2, this.canvasHeight / 2 + 30);
     }
-  }
-
-  roundRect(x, y, width, height, radius) {
-    this.ctx.beginPath();
-    this.ctx.moveTo(x + radius, y);
-    this.ctx.lineTo(x + width - radius, y);
-    this.ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-    this.ctx.lineTo(x + width, y + height - radius);
-    this.ctx.quadraticCurveTo(
-      x + width,
-      y + height,
-      x + width - radius,
-      y + height
-    );
-    this.ctx.lineTo(x + radius, y + height);
-    this.ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-    this.ctx.lineTo(x, y + radius);
-    this.ctx.quadraticCurveTo(x, y, x + radius, y);
-    this.ctx.closePath();
-    this.ctx.fill();
   }
 
   gameOver() {
     this.stop();
 
     // Flash effect
-    this.ctx.fillStyle = "rgba(248, 113, 113, 0.3)";
+    this.ctx.fillStyle = 'rgba(248, 113, 113, 0.3)';
     this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
     setTimeout(() => {
-      this.ctx.fillStyle = "rgba(5, 5, 10, 0.85)";
+      this.ctx.fillStyle = 'rgba(5, 5, 10, 0.85)';
       this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-      this.ctx.textAlign = "center";
+      this.ctx.textAlign = 'center';
 
-      this.ctx.fillStyle = "#f87171";
+      this.ctx.fillStyle = '#f87171';
       this.ctx.font = 'bold 24px "IBM Plex Mono"';
       this.ctx.fillText(
-        "GAME OVER",
+        'GAME OVER',
         this.canvasWidth / 2,
         this.canvasHeight / 2 - 30
       );
 
-      this.ctx.fillStyle = "#ffc233";
+      this.ctx.fillStyle = '#ffc233';
       this.ctx.font = '18px "IBM Plex Mono"';
       this.ctx.fillText(
         `Score: ${this.score}`,
@@ -549,7 +465,7 @@ export class BreakoutGame {
       );
 
       this.ctx.font = '14px "IBM Plex Mono"';
-      this.ctx.fillStyle = "#9ca3af";
+      this.ctx.fillStyle = '#9ca3af';
       this.ctx.fillText(
         `Level: ${this.level}`,
         this.canvasWidth / 2,
@@ -557,10 +473,10 @@ export class BreakoutGame {
       );
 
       if (this.score >= this.highScore && this.score > 0) {
-        this.ctx.fillStyle = "#34d399";
+        this.ctx.fillStyle = '#34d399';
         this.ctx.font = '12px "IBM Plex Mono"';
         this.ctx.fillText(
-          "NEW HIGH SCORE!",
+          'NEW HIGH SCORE!',
           this.canvasWidth / 2,
           this.canvasHeight / 2 + 55
         );
@@ -569,42 +485,36 @@ export class BreakoutGame {
 
     this.terminal.print(
       `\n<span class="output-error">Game Over!</span> Score: <span class="output-accent">${this.score}</span> | Level: <span class="output-accent">${this.level}</span>`,
-      "response"
+      'response'
     );
 
     if (this.score >= this.highScore && this.score > 0) {
       this.terminal.print(
         '<span class="output-success">New High Score!</span>',
-        "response"
+        'response'
       );
     }
 
     this.terminal.print(
       '<span class="output-muted">Type "breakout" to play again</span>\n',
-      "response"
+      'response'
     );
   }
 
   stop() {
-    this.isRunning = false;
-
     if (this.gameLoop) {
       clearInterval(this.gameLoop);
       this.gameLoop = null;
     }
 
-    document.removeEventListener("keydown", this.keyDownHandler);
-    document.removeEventListener("keyup", this.keyUpHandler);
+    document.removeEventListener('keydown', this.keyDownHandler);
+    document.removeEventListener('keyup', this.keyUpHandler);
 
     if (this.canvas) {
-      this.canvas.removeEventListener("mousemove", this.mouseMoveHandler);
-      this.canvas.removeEventListener("touchmove", this.touchMoveHandler);
+      this.canvas.removeEventListener('mousemove', this.mouseMoveHandler);
+      this.canvas.removeEventListener('touchmove', this.touchMoveHandler);
     }
 
-    // Refocus terminal
-    setTimeout(() => {
-      const input = document.getElementById("terminal-input");
-      if (input) input.focus();
-    }, 100);
+    this.cleanup();
   }
 }

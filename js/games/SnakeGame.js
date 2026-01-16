@@ -3,17 +3,25 @@
    Classic snake game in the terminal
    ======================================== */
 
-export class SnakeGame {
+import { BaseGame } from './BaseGame.js';
+import { CONFIG } from '../config/config.js';
+import { getHighScore, setHighScore } from '../utils/storage.js';
+
+export class SnakeGame extends BaseGame {
   constructor(terminal) {
-    this.terminal = terminal;
-    this.canvas = null;
-    this.ctx = null;
-    this.container = null;
+    super(terminal);
+
+    // Get config
+    const config = CONFIG.games.snake;
 
     // Game settings
-    this.gridSize = 20;
-    this.tileCount = 15;
+    this.gridSize = config.gridSize;
+    this.tileCount = config.tileCount;
     this.canvasSize = this.gridSize * this.tileCount;
+    this.speed = config.speed;
+    this.speedIncrement = config.speedIncrement;
+    this.minSpeed = config.minSpeed;
+    this.pointsPerFood = config.pointsPerFood;
 
     // Game state
     this.snake = [];
@@ -21,95 +29,60 @@ export class SnakeGame {
     this.direction = { x: 0, y: 0 };
     this.nextDirection = { x: 0, y: 0 };
     this.score = 0;
-    this.highScore = parseInt(localStorage.getItem("snakeHighScore") || "0");
+    this.highScore = getHighScore('snakeHighScore');
     this.gameLoop = null;
-    this.isRunning = false;
     this.isPaused = false;
-    this.speed = 100;
 
     // Touch/swipe state
     this.touchStartX = null;
     this.touchStartY = null;
     this.minSwipeDistance = 30;
-    // Detect mobile/touch device
-    this.isMobile =
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      ) ||
-      "ontouchstart" in window ||
-      navigator.maxTouchPoints > 0;
   }
 
   start() {
-    // Dismiss keyboard on mobile
-    if (this.isMobile) {
-      const input = document.getElementById("terminal-input");
-      if (input) input.blur();
-    }
+    this.dismissKeyboard();
 
-    this.createGameArea();
-    this.resetGame();
-    this.bindControls();
-    this.isRunning = true;
-    this.gameLoop = setInterval(() => this.update(), this.speed);
-  }
-
-  createGameArea() {
-    this.container = document.createElement("div");
-    this.container.className = "game-container";
-
-    this.canvas = document.createElement("canvas");
-    this.canvas.width = this.canvasSize;
-    this.canvas.height = this.canvasSize;
-    this.canvas.className = "snake-canvas";
-
-    const info = document.createElement("div");
-    info.className = "game-info";
-    info.id = "snake-info";
-    info.innerHTML = `Score: <span id="snake-score">0</span> | High Score: <span id="snake-high">${this.highScore}</span>`;
-
-    this.container.appendChild(this.canvas);
-    this.container.appendChild(info);
+    const infoHTML = `Score: <span id="snake-score">0</span> | High Score: <span id="snake-high">${this.highScore}</span>`;
+    this.createGameArea(this.canvasSize, this.canvasSize, 'snake-canvas', infoHTML, 'snake-info');
 
     // Add mobile controls if on mobile
     if (this.isMobile) {
       this.createMobileControls();
     }
 
-    this.terminal.outputEl.appendChild(this.container);
-    this.ctx = this.canvas.getContext("2d");
-
-    // Scroll to game
-    this.container.scrollIntoView({ behavior: "smooth", block: "center" });
+    this.resetGame();
+    this.bindControls();
+    this.isRunning = true;
+    this.gameLoop = setInterval(() => this.update(), this.speed);
   }
 
   createMobileControls() {
-    const controlsContainer = document.createElement("div");
-    controlsContainer.className = "snake-mobile-controls";
+    const controlsContainer = document.createElement('div');
+    controlsContainer.className = 'snake-mobile-controls';
 
     // Create D-pad style controls
-    const dpad = document.createElement("div");
-    dpad.className = "snake-dpad";
+    const dpad = document.createElement('div');
+    dpad.className = 'snake-dpad';
 
     // Up button
-    const upBtn = document.createElement("button");
-    upBtn.className = "snake-btn snake-btn-up";
-    upBtn.setAttribute("aria-label", "Move up");
-    upBtn.innerHTML = "↑";
+    const upBtn = document.createElement('button');
+    upBtn.className = 'snake-btn snake-btn-up';
+    upBtn.setAttribute('aria-label', 'Move up');
+    upBtn.innerHTML = '↑';
     upBtn.onclick = () => this.handleDirection({ x: 0, y: -1 });
 
     // Left button
-    const leftBtn = document.createElement("button");
-    leftBtn.className = "snake-btn snake-btn-left";
-    leftBtn.setAttribute("aria-label", "Move left");
-    leftBtn.innerHTML = "←";
+    const leftBtn = document.createElement('button');
+    leftBtn.className = 'snake-btn snake-btn-left';
+    leftBtn.setAttribute('aria-label', 'Move left');
+    leftBtn.innerHTML = '←';
     leftBtn.onclick = () => this.handleDirection({ x: -1, y: 0 });
 
     // Center (pause) button
-    const centerBtn = document.createElement("button");
-    centerBtn.className = "snake-btn snake-btn-center";
-    centerBtn.setAttribute("aria-label", "Pause");
-    centerBtn.innerHTML = "⏸";
+    const centerBtn = document.createElement('button');
+    centerBtn.className = 'snake-btn snake-btn-center';
+    centerBtn.setAttribute('aria-label', 'Pause');
+    centerBtn.innerHTML = '⏸';
     centerBtn.onclick = () => {
       if (this.isRunning) {
         this.isPaused = !this.isPaused;
@@ -118,17 +91,17 @@ export class SnakeGame {
     };
 
     // Right button
-    const rightBtn = document.createElement("button");
-    rightBtn.className = "snake-btn snake-btn-right";
-    rightBtn.setAttribute("aria-label", "Move right");
-    rightBtn.innerHTML = "→";
+    const rightBtn = document.createElement('button');
+    rightBtn.className = 'snake-btn snake-btn-right';
+    rightBtn.setAttribute('aria-label', 'Move right');
+    rightBtn.innerHTML = '→';
     rightBtn.onclick = () => this.handleDirection({ x: 1, y: 0 });
 
     // Down button
-    const downBtn = document.createElement("button");
-    downBtn.className = "snake-btn snake-btn-down";
-    downBtn.setAttribute("aria-label", "Move down");
-    downBtn.innerHTML = "↓";
+    const downBtn = document.createElement('button');
+    downBtn.className = 'snake-btn snake-btn-down';
+    downBtn.setAttribute('aria-label', 'Move down');
+    downBtn.innerHTML = '↓';
     downBtn.onclick = () => this.handleDirection({ x: 0, y: 1 });
 
     dpad.appendChild(upBtn);
@@ -192,17 +165,17 @@ export class SnakeGame {
       };
 
       // Escape to quit
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         this.stop();
         this.terminal.print(
           '\n<span class="output-muted">Game ended. Type "snake" to play again!</span>\n',
-          "response"
+          'response'
         );
         return;
       }
 
       // Space to pause
-      if (e.key === " ") {
+      if (e.key === ' ') {
         this.isPaused = !this.isPaused;
         e.preventDefault();
         return;
@@ -215,7 +188,7 @@ export class SnakeGame {
       }
     };
 
-    document.addEventListener("keydown", this.keyHandler);
+    document.addEventListener('keydown', this.keyHandler);
 
     // Add touch/swipe handlers for mobile
     if (this.isMobile && this.canvas) {
@@ -272,10 +245,10 @@ export class SnakeGame {
         e.preventDefault();
       };
 
-      this.canvas.addEventListener("touchstart", this.touchStartHandler, {
+      this.canvas.addEventListener('touchstart', this.touchStartHandler, {
         passive: true,
       });
-      this.canvas.addEventListener("touchend", this.touchEndHandler, {
+      this.canvas.addEventListener('touchend', this.touchEndHandler, {
         passive: false,
       });
     }
@@ -326,13 +299,13 @@ export class SnakeGame {
 
     // Check food collision
     if (head.x === this.food.x && head.y === this.food.y) {
-      this.score += 10;
+      this.score += this.pointsPerFood;
       this.updateScore();
       this.placeFood();
 
       // Speed up slightly
-      if (this.speed > 50) {
-        this.speed -= 2;
+      if (this.speed > this.minSpeed) {
+        this.speed -= this.speedIncrement;
         clearInterval(this.gameLoop);
         this.gameLoop = setInterval(() => this.update(), this.speed);
       }
@@ -360,11 +333,10 @@ export class SnakeGame {
 
   draw() {
     // Clear canvas with background
-    this.ctx.fillStyle = "#0a0a0f";
-    this.ctx.fillRect(0, 0, this.canvasSize, this.canvasSize);
+    this.clearCanvas('#0a0a0f');
 
     // Draw grid (subtle)
-    this.ctx.strokeStyle = "rgba(212, 160, 23, 0.05)";
+    this.ctx.strokeStyle = 'rgba(212, 160, 23, 0.05)';
     this.ctx.lineWidth = 1;
     for (let i = 0; i <= this.tileCount; i++) {
       const pos = i * this.gridSize;
@@ -385,8 +357,8 @@ export class SnakeGame {
 
       if (index === 0) {
         // Head - brighter
-        this.ctx.fillStyle = "#ffc233";
-        this.ctx.shadowColor = "#ffc233";
+        this.ctx.fillStyle = '#ffc233';
+        this.ctx.shadowColor = '#ffc233';
         this.ctx.shadowBlur = 8;
       } else {
         // Body - gradient fade
@@ -403,8 +375,8 @@ export class SnakeGame {
     this.ctx.shadowBlur = 0;
 
     // Draw food
-    this.ctx.fillStyle = "#f87171";
-    this.ctx.shadowColor = "#f87171";
+    this.ctx.fillStyle = '#f87171';
+    this.ctx.shadowColor = '#f87171';
     this.ctx.shadowBlur = 10;
     this.ctx.beginPath();
     this.ctx.arc(
@@ -419,19 +391,19 @@ export class SnakeGame {
 
     // Draw pause overlay
     if (this.isPaused) {
-      this.ctx.fillStyle = "rgba(5, 5, 10, 0.7)";
+      this.ctx.fillStyle = 'rgba(5, 5, 10, 0.7)';
       this.ctx.fillRect(0, 0, this.canvasSize, this.canvasSize);
 
-      this.ctx.fillStyle = "#ffc233";
+      this.ctx.fillStyle = '#ffc233';
       this.ctx.font = 'bold 24px "IBM Plex Mono"';
-      this.ctx.textAlign = "center";
-      this.ctx.fillText("PAUSED", this.canvasSize / 2, this.canvasSize / 2);
+      this.ctx.textAlign = 'center';
+      this.ctx.fillText('PAUSED', this.canvasSize / 2, this.canvasSize / 2);
 
       this.ctx.font = '14px "IBM Plex Mono"';
-      this.ctx.fillStyle = "#9ca3af";
+      this.ctx.fillStyle = '#9ca3af';
       const resumeText = this.isMobile
-        ? "Tap pause button to resume"
-        : "Press SPACE to resume";
+        ? 'Tap pause button to resume'
+        : 'Press SPACE to resume';
       this.ctx.fillText(
         resumeText,
         this.canvasSize / 2,
@@ -441,48 +413,28 @@ export class SnakeGame {
 
     // Draw start prompt if not moving
     if (this.direction.x === 0 && this.direction.y === 0 && !this.isPaused) {
-      this.ctx.fillStyle = "rgba(5, 5, 10, 0.5)";
+      this.ctx.fillStyle = 'rgba(5, 5, 10, 0.5)';
       this.ctx.fillRect(0, 0, this.canvasSize, this.canvasSize);
 
-      this.ctx.fillStyle = "#ffc233";
+      this.ctx.fillStyle = '#ffc233';
       this.ctx.font = '14px "IBM Plex Mono"';
-      this.ctx.textAlign = "center";
+      this.ctx.textAlign = 'center';
       const startText = this.isMobile
-        ? "Swipe or use buttons to start"
-        : "Press arrow keys to start";
+        ? 'Swipe or use buttons to start'
+        : 'Press arrow keys to start';
       this.ctx.fillText(startText, this.canvasSize / 2, this.canvasSize / 2);
     }
   }
 
-  roundRect(x, y, width, height, radius) {
-    this.ctx.beginPath();
-    this.ctx.moveTo(x + radius, y);
-    this.ctx.lineTo(x + width - radius, y);
-    this.ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-    this.ctx.lineTo(x + width, y + height - radius);
-    this.ctx.quadraticCurveTo(
-      x + width,
-      y + height,
-      x + width - radius,
-      y + height
-    );
-    this.ctx.lineTo(x + radius, y + height);
-    this.ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-    this.ctx.lineTo(x, y + radius);
-    this.ctx.quadraticCurveTo(x, y, x + radius, y);
-    this.ctx.closePath();
-    this.ctx.fill();
-  }
-
   updateScore() {
-    const scoreEl = document.getElementById("snake-score");
-    const highEl = document.getElementById("snake-high");
+    const scoreEl = document.getElementById('snake-score');
+    const highEl = document.getElementById('snake-high');
 
     if (scoreEl) scoreEl.textContent = this.score;
 
     if (this.score > this.highScore) {
       this.highScore = this.score;
-      localStorage.setItem("snakeHighScore", this.highScore.toString());
+      setHighScore('snakeHighScore', this.highScore);
       if (highEl) highEl.textContent = this.highScore;
     }
   }
@@ -491,24 +443,24 @@ export class SnakeGame {
     this.stop();
 
     // Flash effect
-    this.ctx.fillStyle = "rgba(248, 113, 113, 0.3)";
+    this.ctx.fillStyle = 'rgba(248, 113, 113, 0.3)';
     this.ctx.fillRect(0, 0, this.canvasSize, this.canvasSize);
 
     // Game over text
     setTimeout(() => {
-      this.ctx.fillStyle = "rgba(5, 5, 10, 0.8)";
+      this.ctx.fillStyle = 'rgba(5, 5, 10, 0.8)';
       this.ctx.fillRect(0, 0, this.canvasSize, this.canvasSize);
 
-      this.ctx.fillStyle = "#f87171";
+      this.ctx.fillStyle = '#f87171';
       this.ctx.font = 'bold 20px "IBM Plex Mono"';
-      this.ctx.textAlign = "center";
+      this.ctx.textAlign = 'center';
       this.ctx.fillText(
-        "GAME OVER",
+        'GAME OVER',
         this.canvasSize / 2,
         this.canvasSize / 2 - 20
       );
 
-      this.ctx.fillStyle = "#ffc233";
+      this.ctx.fillStyle = '#ffc233';
       this.ctx.font = '16px "IBM Plex Mono"';
       this.ctx.fillText(
         `Score: ${this.score}`,
@@ -517,10 +469,10 @@ export class SnakeGame {
       );
 
       if (this.score >= this.highScore && this.score > 0) {
-        this.ctx.fillStyle = "#34d399";
+        this.ctx.fillStyle = '#34d399';
         this.ctx.font = '12px "IBM Plex Mono"';
         this.ctx.fillText(
-          "NEW HIGH SCORE!",
+          'NEW HIGH SCORE!',
           this.canvasSize / 2,
           this.canvasSize / 2 + 35
         );
@@ -529,42 +481,36 @@ export class SnakeGame {
 
     this.terminal.print(
       `\n<span class="output-error">Game Over!</span> Final Score: <span class="output-accent">${this.score}</span>`,
-      "response"
+      'response'
     );
 
     if (this.score >= this.highScore && this.score > 0) {
       this.terminal.print(
         '<span class="output-success">New High Score!</span>',
-        "response"
+        'response'
       );
     }
 
     this.terminal.print(
       '<span class="output-muted">Type "snake" to play again</span>\n',
-      "response"
+      'response'
     );
   }
 
   stop() {
-    this.isRunning = false;
-
     if (this.gameLoop) {
       clearInterval(this.gameLoop);
       this.gameLoop = null;
     }
 
-    document.removeEventListener("keydown", this.keyHandler);
+    document.removeEventListener('keydown', this.keyHandler);
 
     // Remove touch handlers
     if (this.canvas && this.touchStartHandler && this.touchEndHandler) {
-      this.canvas.removeEventListener("touchstart", this.touchStartHandler);
-      this.canvas.removeEventListener("touchend", this.touchEndHandler);
+      this.canvas.removeEventListener('touchstart', this.touchStartHandler);
+      this.canvas.removeEventListener('touchend', this.touchEndHandler);
     }
 
-    // Refocus terminal input
-    setTimeout(() => {
-      const input = document.getElementById("terminal-input");
-      if (input) input.focus();
-    }, 100);
+    this.cleanup();
   }
 }

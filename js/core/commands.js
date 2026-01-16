@@ -3,10 +3,10 @@
    Core registry class - commands are loaded from js/commands/
    ======================================== */
 
-import { registerCoreCommands } from './commands/core.js';
-import { registerEasterEggCommands } from './commands/easter-eggs.js';
-import { registerSystemCommands } from './commands/system.js';
-import { registerHiddenCommands } from './commands/hidden.js';
+import { registerCoreCommands } from '../commands/core.js';
+import { registerEasterEggCommands } from '../commands/easter-eggs.js';
+import { registerSystemCommands } from '../commands/system.js';
+import { registerHiddenCommands } from '../commands/hidden.js';
 
 export class CommandRegistry {
   constructor() {

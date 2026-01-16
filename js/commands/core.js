@@ -3,155 +3,147 @@
    Main user-facing commands
    ======================================== */
 
+import { CONFIG } from '../config/config.js';
+import * as fmt from '../utils/formatter.js';
+
 export function registerCoreCommands(registry) {
   registry.register(
-    "help",
+    'help',
     (args, terminal) => {
       const commands = registry.getVisibleCommands();
 
-      terminal.print(
-        '\n<span class="output-accent">Available Commands</span>',
-        "response"
-      );
-      terminal.print(
-        '<span class="output-muted">─────────────────────────────────</span>',
-        "response"
-      );
+      terminal.print(`\n${fmt.accent('Available Commands')}`, 'response');
+      terminal.print(fmt.separator(), 'response');
 
-      terminal.print('<div class="help-table">', "response");
-      commands.forEach(({ name, description, aliases }) => {
-        const aliasText = aliases.length
-          ? ` <span class="output-muted">(${aliases.join(", ")}) </span>`
-          : " ";
-        terminal.print(
-          `<span class="help-cmd">${name}</span>${aliasText}<span class="help-desc">${description}</span>`,
-          "response"
-        );
+      terminal.print(fmt.commandTable(commands), 'response');
+
+      terminal.print(
+        `\n${fmt.muted('Tip: Try typing random commands... you might find easter eggs!')}\n`,
+        'response'
+      );
+    },
+    {
+      description: 'Show available commands',
+      aliases: ['?', 'commands'],
+    }
+  );
+
+  registry.register(
+    'about',
+    (args, terminal) => {
+      const content = fmt.box('TOM STONEBERG', [
+        '',
+        'I am a software engineer based in Colorado.',
+        '',
+        '',
+        'This site is a playground for kicking the tires',
+        'of various AI coding software. Claude Code was',
+        'used for the initial scaffolding.',
+        '',
+      ]);
+      terminal.print(`\n${content}\n`, 'response');
+    },
+    {
+      description: 'Learn about me',
+      aliases: ['bio', 'me'],
+    }
+  );
+
+  registry.register(
+    'resume',
+    (args, terminal) => {
+      const jobs = [
+        ['Skipify', 'Apr 2022 - Present'],
+        ['Zuul', 'Jun 2021 - Present'],
+        ['Promontech', 'Jul 2018 - Jun 2021'],
+        ['Homeadvisor', 'Feb 2016 - Jul 2018'],
+        ['Lawyaw', 'Aug 2016 - Apr 2017'],
+        ['Independent', 'Dec 2014 - Dec 2015'],
+        ['Denver Energy Group', 'Jul 2014 - Dec 2014'],
+        ['Northrop Grumman', 'May 2012 - May 2014'],
+        ['Nasdaq OMX', 'May 2010 - Apr 2012'],
+      ];
+
+      let output = `\n${fmt.accent('Resume / CV')}\n`;
+      output += `${fmt.separator()}\n\n`;
+      output += `${fmt.cyan('Work Experience:')}\n\n`;
+
+      jobs.forEach(([company, dates]) => {
+        output += `  ${fmt.accent(company.padEnd(28))} ${fmt.muted(dates)}\n`;
       });
-      terminal.print("</div>", "response");
 
-      terminal.print(
-        '\n<span class="output-muted">Tip: Try typing random commands... you might find easter eggs!</span>\n',
-        "response"
-      );
+      output += `\n${fmt.separator()}\n`;
+      output += `${fmt.success('↓')} ${fmt.link(CONFIG.assets.resume, 'View Full Resume (PDF)')}\n`;
+
+      terminal.print(output, 'response');
     },
     {
-      description: "Show available commands",
-      aliases: ["?", "commands"],
+      description: 'View my resume',
+      aliases: ['cv'],
     }
   );
 
   registry.register(
-    "about",
+    'contact',
     (args, terminal) => {
-      terminal.print(
-        `
-<span class="ascii-box">┌─────────────────────────────────────────────────────┐</span>
-<span class="ascii-box">│</span>  <span class="output-accent">TOM STONEBERG</span>                                      <span class="ascii-box">│</span>
-<span class="ascii-box">├─────────────────────────────────────────────────────┤</span>
-<span class="ascii-box">│</span>                                                     <span class="ascii-box">│</span>
-<span class="ascii-box">│</span>  I am a software engineer based in Colorado.      <span class="ascii-box">│</span>
-<span class="ascii-box">│</span>                                                     <span class="ascii-box">│</span>
-<span class="ascii-box">│</span>                                                     <span class="ascii-box">│</span>
-<span class="ascii-box">│</span>  This site is a playground for kicking the tires  <span class="ascii-box">│</span>
-<span class="ascii-box">│</span>  of various AI coding software. Claude Code was   <span class="ascii-box">│</span>
-<span class="ascii-box">│</span>  used for the initial scaffolding.                 <span class="ascii-box">│</span>
-<span class="ascii-box">│</span>                                                     <span class="ascii-box">│</span>
-<span class="ascii-box">└─────────────────────────────────────────────────────┘</span>
-`,
-        "response"
-      );
+      const contacts = [
+        ['1', 'Email', fmt.link(`mailto:${CONFIG.social.email}`, CONFIG.social.email)],
+        ['2', 'GitHub', fmt.link(CONFIG.social.github, 'github.com/stoneyb')],
+        ['3', 'X', fmt.link(CONFIG.social.twitter, '@tstoneb')],
+        ['4', 'Reading', fmt.link(CONFIG.social.goodreads, 'Goodreads Profile')],
+        ['5', 'LinkedIn', fmt.link(CONFIG.social.linkedin, 'No')],
+      ];
+
+      let output = `\n${fmt.accent('[CONTACT OPTIONS]')}\n\n`;
+
+      contacts.forEach(([num, label, link]) => {
+        output += `${fmt.cyan(`[${num}]`)} ${label.padEnd(8)} → ${link}\n`;
+      });
+
+      output += `\n${fmt.muted('Type number or name to visit')}\n`;
+
+      terminal.print(output, 'response');
     },
     {
-      description: "Learn about me",
-      aliases: ["bio", "me"],
+      description: 'Contact information',
+      aliases: ['email', 'socials'],
     }
   );
 
   registry.register(
-    "resume",
-    (args, terminal) => {
-      terminal.print(
-        `
-<span class="output-accent">Resume / CV</span>
-<span class="output-muted">───────────────────────────────────────────────</span>
-
-<span class="output-cyan">Work Experience:</span>
-
-  <span class="output-accent">Skipify</span>                      <span class="output-muted">Apr 2022 - Present</span>
-  <span class="output-accent">Zuul</span>                         <span class="output-muted">Jun 2021 - Present</span>
-  <span class="output-accent">Promontech</span>                   <span class="output-muted">Jul 2018 - Jun 2021</span>
-  <span class="output-accent">Homeadvisor</span>                  <span class="output-muted">Feb 2016 - Jul 2018</span>
-  <span class="output-accent">Lawyaw</span>                       <span class="output-muted">Aug 2016 - Apr 2017</span>
-  <span class="output-accent">Independent</span>                  <span class="output-muted">Dec 2014 - Dec 2015</span>
-  <span class="output-accent">Denver Energy Group</span>          <span class="output-muted">Jul 2014 - Dec 2014</span>
-  <span class="output-accent">Northrop Grumman</span>             <span class="output-muted">May 2012 - May 2014</span>
-  <span class="output-accent">Nasdaq OMX</span>                   <span class="output-muted">May 2010 - Apr 2012</span>
-
-<span class="output-muted">───────────────────────────────────────────────</span>
-<span class="output-success">↓</span> <a href="/assets/TomStonebergResumeJan2026.pdf" target="_blank" rel="noopener">View Full Resume (PDF)</a>
-`,
-        "response"
-      );
-    },
-    {
-      description: "View my resume",
-      aliases: ["cv"],
-    }
-  );
-
-  registry.register(
-    "contact",
-    (args, terminal) => {
-      terminal.print(
-        `
-<span class="output-accent">[CONTACT OPTIONS]</span>
-
-<span class="output-cyan">[1]</span> Email    → <a href="mailto:hello@tomstoneberg.com">hello@tomstoneberg.com</a>
-<span class="output-cyan">[2]</span> GitHub   → <a href="https://github.com/stoneyb" target="_blank" rel="noopener">github.com/stoneyb</a>
-<span class="output-cyan">[3]</span> X        → <a href="https://x.com/tstoneb" target="_blank" rel="noopener">@tstoneb</a>
-<span class="output-cyan">[4]</span> Reading  → <a href="https://www.goodreads.com/user/show/40625768" target="_blank" rel="noopener">Goodreads Profile</a>
-<span class="output-cyan">[5]</span> LinkedIn → <a href="https://bishopfox.com/blog/linkedin-introduces-insecurity" target="_blank" rel="noopener">No</a>
-
-<span class="output-muted">Type number or name to visit</span>
-`,
-        "response"
-      );
-    },
-    {
-      description: "Contact information",
-      aliases: ["email", "socials"],
-    }
-  );
-
-  registry.register(
-    "clear",
+    'clear',
     (args, terminal) => {
       terminal.clear();
     },
     {
-      description: "Clear the terminal",
-      aliases: ["cls", "c"],
+      description: 'Clear the terminal',
+      aliases: ['cls', 'c'],
     }
   );
 
   registry.register(
-    "ls",
+    'ls',
     (args, terminal) => {
-      terminal.print(
-        `
-<span class="output-cyan">drwxr-xr-x</span>  <span class="output-muted">tom</span>  <span class="output-accent">about/</span>
-<span class="output-cyan">drwxr-xr-x</span>  <span class="output-muted">tom</span>  <span class="output-accent">resume/</span>
-<span class="output-cyan">drwxr-xr-x</span>  <span class="output-muted">tom</span>  <span class="output-accent">contact/</span>
-<span class="output-cyan">-rw-r--r--</span>  <span class="output-muted">tom</span>  <span class="output-muted">README.md</span>
-<span class="output-cyan">-rw-r--r--</span>  <span class="output-muted">tom</span>  <span class="output-muted">.secrets</span>
-`,
-        "response"
-      );
+      const dirs = [
+        ['drwxr-xr-x', 'tom', 'about/'],
+        ['drwxr-xr-x', 'tom', 'resume/'],
+        ['drwxr-xr-x', 'tom', 'contact/'],
+        ['-rw-r--r--', 'tom', 'README.md'],
+        ['-rw-r--r--', 'tom', '.secrets'],
+      ];
+
+      let output = '\n';
+      dirs.forEach(([perms, owner, file]) => {
+        const isDir = file.endsWith('/');
+        const nameColor = isDir ? fmt.accent(file) : fmt.muted(file);
+        output += `${fmt.cyan(perms)}  ${fmt.muted(owner)}  ${nameColor}\n`;
+      });
+
+      terminal.print(output, 'response');
     },
     {
-      description: "List available sections",
-      aliases: ["dir", "list"],
+      description: 'List available sections',
+      aliases: ['dir', 'list'],
     }
   );
 }

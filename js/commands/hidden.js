@@ -3,51 +3,26 @@
    Secret link commands
    ======================================== */
 
+import { CONFIG } from '../config/config.js';
+
 export function registerHiddenCommands(registry) {
-  registry.register(
-    "dn",
-    (args, terminal) => {
-      window.open("https://dn-clicker2.vercel.app", "_blank");
-    },
-    {
-      description: "",
-      hidden: true,
-    }
-  );
+  // Create a helper to register hidden link commands
+  const registerLink = (command, url) => {
+    registry.register(
+      command,
+      (args, terminal) => {
+        window.open(url, '_blank');
+      },
+      {
+        description: '',
+        hidden: true,
+      }
+    );
+  };
 
-  registry.register(
-    "chumley",
-    (args, terminal) => {
-      window.open("https://op.gg/lol/summoners/na/chumley420-NA1", "_blank");
-    },
-    {
-      description: "",
-      hidden: true,
-    }
-  );
-
-  registry.register(
-    "empatheticrock",
-    (args, terminal) => {
-      window.open(
-        "https://op.gg/lol/summoners/na/EmpatheticRock-NA1",
-        "_blank"
-      );
-    },
-    {
-      description: "",
-      hidden: true,
-    }
-  );
-
-  registry.register(
-    "masedawg",
-    (args, terminal) => {
-      window.open("https://op.gg/lol/summoners/na/masedawg69-NA1", "_blank");
-    },
-    {
-      description: "",
-      hidden: true,
-    }
-  );
+  // Register all hidden commands from config
+  registerLink('dn', CONFIG.hidden.dn);
+  registerLink('chumley', CONFIG.hidden.chumley);
+  registerLink('empatheticrock', CONFIG.hidden.empatheticrock);
+  registerLink('masedawg', CONFIG.hidden.masedawg);
 }
