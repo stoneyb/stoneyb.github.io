@@ -88,3 +88,193 @@ test.describe('Smoke Tests', () => {
     await expect(page.locator('.screen-glow')).toBeVisible();
   });
 });
+
+test.describe('Terminal Command Tests', () => {
+  test('help command displays available commands', async ({ page }) => {
+    await page.goto('/');
+
+    const input = page.locator('#terminal-input');
+    const output = page.locator('#output');
+
+    // Type and execute help command
+    await input.fill('help');
+    await input.press('Enter');
+
+    // Wait for output to appear
+    await page.waitForTimeout(500);
+
+    // Verify help output contains expected commands
+    const outputText = await output.textContent();
+    expect(outputText).toContain('Available Commands');
+    expect(outputText).toContain('about');
+    expect(outputText).toContain('resume');
+    expect(outputText).toContain('contact');
+    expect(outputText).toContain('clear');
+  });
+
+  test('about command displays bio information', async ({ page }) => {
+    await page.goto('/');
+
+    const input = page.locator('#terminal-input');
+    const output = page.locator('#output');
+
+    // Execute about command
+    await input.fill('about');
+    await input.press('Enter');
+
+    // Wait for output
+    await page.waitForTimeout(500);
+
+    // Verify about output
+    const outputText = await output.textContent();
+    expect(outputText).toContain('TOM STONEBERG');
+    expect(outputText).toContain('software engineer');
+    expect(outputText).toContain('Colorado');
+  });
+
+  test('resume command shows work experience', async ({ page }) => {
+    await page.goto('/');
+
+    const input = page.locator('#terminal-input');
+    const output = page.locator('#output');
+
+    // Execute resume command
+    await input.fill('resume');
+    await input.press('Enter');
+
+    // Wait for output
+    await page.waitForTimeout(500);
+
+    // Verify resume output
+    const outputText = await output.textContent();
+    expect(outputText).toContain('Resume');
+    expect(outputText).toContain('Work Experience');
+    expect(outputText).toContain('Skipify');
+    expect(outputText).toContain('View Full Resume');
+
+    // Verify PDF link is present
+    const pdfLink = output.locator('a[href*="TomStonebergResumeJan2026.pdf"]');
+    await expect(pdfLink).toBeVisible();
+  });
+
+  test('contact command displays contact options', async ({ page }) => {
+    await page.goto('/');
+
+    const input = page.locator('#terminal-input');
+    const output = page.locator('#output');
+
+    // Execute contact command
+    await input.fill('contact');
+    await input.press('Enter');
+
+    // Wait for output
+    await page.waitForTimeout(500);
+
+    // Verify contact output
+    const outputText = await output.textContent();
+    expect(outputText).toContain('CONTACT OPTIONS');
+    expect(outputText).toContain('Email');
+    expect(outputText).toContain('GitHub');
+
+    // Verify email link is present
+    const emailLink = output.locator('a[href="mailto:hello@tomstoneberg.com"]');
+    await expect(emailLink).toBeVisible();
+
+    // Verify GitHub link is present
+    const githubLink = output.locator('a[href*="github.com/stoneyb"]');
+    await expect(githubLink).toBeVisible();
+  });
+
+  test('ls command lists directory contents', async ({ page }) => {
+    await page.goto('/');
+
+    const input = page.locator('#terminal-input');
+    const output = page.locator('#output');
+
+    // Execute ls command
+    await input.fill('ls');
+    await input.press('Enter');
+
+    // Wait for output
+    await page.waitForTimeout(500);
+
+    // Verify ls output
+    const outputText = await output.textContent();
+    expect(outputText).toContain('about/');
+    expect(outputText).toContain('resume/');
+    expect(outputText).toContain('contact/');
+    expect(outputText).toContain('README.md');
+  });
+
+  test('multiple commands work in sequence', async ({ page }) => {
+    await page.goto('/');
+
+    const input = page.locator('#terminal-input');
+    const output = page.locator('#output');
+
+    // Execute first command
+    await input.fill('ls');
+    await input.press('Enter');
+    await page.waitForTimeout(300);
+
+    // Execute second command
+    await input.fill('about');
+    await input.press('Enter');
+    await page.waitForTimeout(300);
+
+    // Execute third command
+    await input.fill('contact');
+    await input.press('Enter');
+    await page.waitForTimeout(300);
+
+    // Verify all outputs are present in order
+    const outputText = await output.textContent();
+    expect(outputText).toContain('about/'); // from ls
+    expect(outputText).toContain('TOM STONEBERG'); // from about
+    expect(outputText).toContain('CONTACT OPTIONS'); // from contact
+  });
+
+  test('clear command clears terminal output', async ({ page }) => {
+    await page.goto('/');
+
+    const input = page.locator('#terminal-input');
+    const output = page.locator('#output');
+
+    // Execute a command to generate output
+    await input.fill('about');
+    await input.press('Enter');
+    await page.waitForTimeout(300);
+
+    // Verify output exists
+    let outputText = await output.textContent();
+    expect(outputText.length).toBeGreaterThan(0);
+
+    // Clear the terminal
+    await input.fill('clear');
+    await input.press('Enter');
+    await page.waitForTimeout(300);
+
+    // Verify output is cleared
+    outputText = await output.textContent();
+    expect(outputText.trim()).toBe('');
+  });
+
+  test('invalid command shows appropriate response', async ({ page }) => {
+    await page.goto('/');
+
+    const input = page.locator('#terminal-input');
+    const output = page.locator('#output');
+
+    // Execute invalid command
+    await input.fill('invalidcommandxyz123');
+    await input.press('Enter');
+
+    // Wait for output
+    await page.waitForTimeout(500);
+
+    // Verify error or not found message appears
+    const outputText = await output.textContent();
+    // The terminal should show some response (error message or "command not found")
+    expect(outputText.length).toBeGreaterThan(0);
+  });
+});
