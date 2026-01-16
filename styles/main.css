@@ -545,10 +545,6 @@ body::before {
     padding: var(--space-sm);
   }
 
-  .terminal-buttons {
-    display: none;
-  }
-
   /* Prevent zoom on iOS */
   .terminal-input {
     font-size: 16px;
