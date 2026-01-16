@@ -3,7 +3,7 @@
    Initializes the terminal application
    ======================================== */
 
-import { Terminal } from './terminal.js';
+import { Terminal } from './core/terminal.js';
 
 // Initialize terminal when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {

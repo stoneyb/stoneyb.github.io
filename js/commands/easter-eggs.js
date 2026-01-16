@@ -3,10 +3,11 @@
    Fun hidden commands
    ======================================== */
 
-import { MatrixRain } from '../matrix.js';
-import { SnakeGame } from '../snake.js';
-import { BreakoutGame } from '../breakout.js';
-import { SlotMachineGame } from '../slots.js';
+import { MatrixRain } from '../games/matrix.js';
+import { SnakeGame } from '../games/SnakeGame.js';
+import { BreakoutGame } from '../games/BreakoutGame.js';
+import { SlotMachineGame } from '../games/SlotMachineGame.js';
+import { CONFIG } from '../config/config.js';
 
 export function registerEasterEggCommands(registry) {
   registry.register(
@@ -45,7 +46,7 @@ export function registerEasterEggCommands(registry) {
       );
 
       const matrix = new MatrixRain();
-      matrix.start(15000);
+      matrix.start(CONFIG.games.matrix.defaultDuration);
     },
     {
       description: "Enter the Matrix",

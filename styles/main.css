@@ -714,6 +714,83 @@ body::before {
   }
 }
 
+/* --- Breakout Mobile Controls --- */
+.breakout-mobile-controls {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+.breakout-btn {
+  width: 60px;
+  height: 50px;
+  font-size: 24px;
+  background: rgba(212, 160, 23, 0.2);
+  border: 2px solid var(--amber-dim);
+  border-radius: 8px;
+  color: var(--amber);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.breakout-btn:active {
+  background: rgba(212, 160, 23, 0.4);
+}
+
+/* --- Slots Controls --- */
+.slots-controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.slots-btn {
+  height: 45px;
+  padding: 0 20px;
+  font-size: 14px;
+  font-weight: bold;
+  background: rgba(212, 160, 23, 0.2);
+  border: 2px solid var(--amber-dim);
+  border-radius: 8px;
+  color: var(--amber);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  font-family: 'IBM Plex Mono', monospace;
+  transition: background 0.15s;
+}
+
+.slots-btn:hover {
+  background: rgba(212, 160, 23, 0.35);
+}
+
+.slots-btn-spin {
+  padding: 0 35px;
+  background: rgba(212, 160, 23, 0.3);
+  font-size: 16px;
+}
+
+.slots-btn:active {
+  background: rgba(212, 160, 23, 0.5);
+}
+
+.slots-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* --- Matrix Canvas --- */
 #matrix-canvas {
   position: fixed;
