@@ -527,10 +527,6 @@ body::before {
     padding: var(--space-sm) var(--space-md);
   }
 
-  .terminal-status {
-    display: none;
-  }
-
   .ascii-art {
     font-size: 9px;
   }
