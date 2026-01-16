@@ -23,6 +23,18 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'mobile-iphone-16',
+      use: {
+        ...devices['iPhone 15 Pro'], // iPhone 16 uses same viewport as 15 Pro
+        // iPhone 16 specs: 393x852 viewport, 2.5x pixel ratio
+        viewport: { width: 393, height: 852 },
+        deviceScaleFactor: 3,
+        isMobile: true,
+        hasTouch: true,
+        defaultBrowserType: 'webkit',
+      },
+    },
   ],
 
   // Run local dev server before tests (only in local development)

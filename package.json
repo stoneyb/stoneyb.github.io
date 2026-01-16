@@ -8,7 +8,10 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "playwright test",
-    "test:headed": "playwright test --headed"
+    "test:headed": "playwright test --headed",
+    "test:desktop": "playwright test --project=chromium",
+    "test:mobile": "playwright test --project=mobile-iphone-16",
+    "test:mobile:headed": "playwright test --project=mobile-iphone-16 --headed"
   },
   "repository": {
     "type": "git",

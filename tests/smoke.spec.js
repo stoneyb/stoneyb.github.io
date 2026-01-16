@@ -278,3 +278,64 @@ test.describe('Terminal Command Tests', () => {
     expect(outputText.length).toBeGreaterThan(0);
   });
 });
+
+test.describe('Mobile-Specific Tests', () => {
+  test('terminal renders correctly on mobile viewport', async ({ page, isMobile }) => {
+    // This test will run on both desktop and mobile, but we check mobile-specific behavior
+    await page.goto('/');
+
+    const terminal = page.locator('.terminal');
+    await expect(terminal).toBeVisible();
+
+    // Verify terminal is scrollable on mobile
+    const terminalBody = page.locator('.terminal-body');
+    await expect(terminalBody).toBeVisible();
+
+    // On mobile devices, verify touch interaction is possible
+    if (isMobile) {
+      const input = page.locator('#terminal-input');
+      await input.tap(); // Use tap instead of click for mobile
+      await expect(input).toBeFocused();
+    }
+  });
+
+  test('mobile viewport shows responsive layout', async ({ page, isMobile, viewport }) => {
+    await page.goto('/');
+
+    const terminal = page.locator('.terminal');
+    const box = await terminal.boundingBox();
+
+    if (isMobile && viewport) {
+      // Terminal should fit within mobile viewport
+      expect(box.width).toBeLessThanOrEqual(viewport.width);
+
+      // Verify terminal header is visible and accessible
+      const header = page.locator('.terminal-header');
+      await expect(header).toBeVisible();
+
+      // Verify input is accessible on mobile
+      const input = page.locator('#terminal-input');
+      await expect(input).toBeVisible();
+      const inputBox = await input.boundingBox();
+      expect(inputBox.width).toBeGreaterThan(0);
+    }
+  });
+
+  test('mobile commands work with touch input', async ({ page, isMobile }) => {
+    await page.goto('/');
+
+    if (isMobile) {
+      const input = page.locator('#terminal-input');
+      const output = page.locator('#output');
+
+      // Use tap for mobile interaction
+      await input.tap();
+      await input.fill('help');
+      await input.press('Enter');
+      await page.waitForTimeout(500);
+
+      const outputText = await output.textContent();
+      expect(outputText).toContain('Available Commands');
+    }
+  });
+});
