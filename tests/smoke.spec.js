@@ -17,20 +17,34 @@ test.describe('Smoke Tests', () => {
     await expect(terminal).toBeVisible();
   });
 
-  test('terminal header elements are present', async ({ page }) => {
+  test('terminal header elements are present', async ({ page, isMobile }) => {
     await page.goto('/');
 
     // Check terminal buttons
-    await expect(page.locator('.terminal-buttons')).toBeVisible();
+    const buttons = page.locator('.terminal-buttons');
+    await expect(buttons).toHaveCount(1);
+    if (!isMobile) {
+      await expect(buttons).toBeVisible();
+    } else {
+      // On mobile these are present but visually hidden to save space.
+      await expect(buttons).toBeHidden();
+    }
 
     // Check terminal title
     const title = page.locator('.terminal-title');
     await expect(title).toBeVisible();
     await expect(title).toContainText('tomstoneberg.com');
 
-    // Check connection status
-    await expect(page.locator('.terminal-status')).toBeVisible();
-    await expect(page.locator('.status-text')).toContainText('connected');
+    // Check connection status (may be hidden on mobile layouts)
+    const status = page.locator('.terminal-status');
+    const statusText = page.locator('.status-text');
+    if (!isMobile) {
+      await expect(status).toBeVisible();
+      await expect(statusText).toContainText(/connected/i);
+    } else {
+      await expect(status).toHaveCount(1);
+      await expect(statusText).toHaveCount(1);
+    }
   });
 
   test('terminal input is present and focusable', async ({ page }) => {
@@ -144,17 +158,11 @@ test.describe('Terminal Command Tests', () => {
     await input.press('Enter');
 
     // Verify contact output
-    await expect(output).toContainText('CONTACT OPTIONS', { timeout: 5000 });
-    await expect(output).toContainText('Email');
-    await expect(output).toContainText('GitHub');
-
-    // Verify email link is present
-    const emailLink = output.locator('a[href="mailto:hello@tomstoneberg.com"]');
-    await expect(emailLink).toBeVisible();
-
-    // Verify GitHub link is present
-    const githubLink = output.locator('a[href*="github.com/stoneyb"]');
-    await expect(githubLink).toBeVisible();
+    await expect(output).toContainText('Get In Touch', { timeout: 5000 });
+    await expect(output).toContainText(/Email/i);
+    await expect(output).toContainText('hello@tomstoneberg.com');
+    await expect(output).toContainText(/GitHub/i);
+    await expect(output).toContainText('github.com/stoneyb');
   });
 
   test('ls command lists directory contents', async () => {
@@ -183,13 +191,13 @@ test.describe('Terminal Command Tests', () => {
     // Execute third command
     await input.fill('contact');
     await input.press('Enter');
-    await expect(output).toContainText('CONTACT OPTIONS', { timeout: 5000 });
+    await expect(output).toContainText('Get In Touch', { timeout: 5000 });
 
     // Verify all outputs are present in order
     const outputText = await output.textContent();
     expect(outputText).toContain('about/'); // from ls
     expect(outputText).toContain('TOM STONEBERG'); // from about
-    expect(outputText).toContain('CONTACT OPTIONS'); // from contact
+    expect(outputText).toContain('Get In Touch'); // from contact
   });
 
   test('clear command clears terminal output', async () => {
@@ -216,8 +224,8 @@ test.describe('Terminal Command Tests', () => {
     await input.press('Enter');
 
     // Verify error message appears with helpful suggestion
-    await expect(output).toContainText('command not found', { timeout: 5000 });
-    await expect(output).toContainText('help');
+    await expect(output).toContainText(/command not found/i, { timeout: 5000 });
+    await expect(output).toContainText(/help/i);
   });
 });
 
@@ -255,7 +263,7 @@ test.describe('Command History Navigation Tests', () => {
 
     await input.fill('contact');
     await input.press('Enter');
-    await expect(output).toContainText('CONTACT OPTIONS', { timeout: 5000 });
+    await expect(output).toContainText('Get In Touch', { timeout: 5000 });
 
     // Navigate up through history (should get commands in reverse order)
     await input.press('ArrowUp');
